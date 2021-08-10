@@ -37,21 +37,21 @@ def gen_Customer_CSV(rowNum):
             firstname=faker.first_name_female()
             lastname=faker.last_name_female()
         csvwriter.writerow([i,firstname,lastname,faker.address(),faker.city(),faker.country(),gen_Day1(18,90),gender,datetime.datetime.now()])
-def gen_ProductCategory_CSV(rowNum):
-    csvfile=open('ProductCategory.csv','w')
-    csvwriter=csv.writer(csvfile,delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
-    csvwriter.writerow(["IdProductCategory","Name","ModifiedDate"])
-    for i in range(0,rowNum):
-        csvwriter.writerow([i,faker.text(max_nb_chars=20)],datetime.datetime.now())
+##def gen_ProductCategory_CSV(rowNum):
+    ##csvfile=open('ProductCategory.csv','w')
+    ##csvwriter=csv.writer(csvfile,delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
+    ##csvwriter.writerow(["IdProductCategory","Name","ModifiedDate"])
+    ##for i in range(0,rowNum):
+        ##csvwriter.writerow([i,faker.text(max_nb_chars=20)],datetime.datetime.now())
 
-def gen_Product_CSV(rowNum,NumOfRef):
+def gen_Product_CSV(rowNum):
     csvfile=open('Product.csv','w')
     csvwriter=csv.writer(csvfile,delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
     csvwriter.writerow(["IdProduct","ProductName","ProductNumber","Standard","ListPrice","ProductCategory","ModifiedDate"])
     for i in range(0,rowNum):
         StandardCost=gen_Money(10000)
         ListPrice=StandardCost+gen_Money(1000)
-        csvwriter.writerow([i,faker.text(max_nb_chars=20),faker.license_plate(),StandardCost,ListPrice,gen_Reference(NumOfRef),datetime.datetime.now()])
+        csvwriter.writerow([i,faker.text(max_nb_chars=20),faker.license_plate(),StandardCost,ListPrice,faker.text(max_nb_chars=20),datetime.datetime.now()])
 
 def gen_BillHeader_CSV(rowNum,NumOfRef):
     csvfile=open('BillHeader.csv','w')
@@ -75,7 +75,7 @@ ProdCate_num=100
 BHeader_num=1000000
 BDetail_num=5000000
 gen_Customer_CSV(Cus_num)
-gen_ProductCategory_CSV(ProdCate_num)
-gen_Product_CSV(Prod_num,ProdCate_num)
+##gen_ProductCategory_CSV(ProdCate_num)
+gen_Product_CSV(Prod_num)
 gen_BillHeader_CSV(BHeader_num,Cus_num)
 gen_BillDetail_CSV(BDetail_num,{"Bill":BHeader_num,"Product":Prod_num})
