@@ -22,11 +22,6 @@ Gender NCHAR(64),
 ModifiedDate DATETIME
 )
 
-CREATE TABLE STAGE.ProductCategory(
-IdProductCategory INT IDENTITY(1,1) PRIMARY KEY,
-Name  NVARCHAR(2048),
-ModifiedDate DATETIME
-)
 
 CREATE TABLE STAGE.Product(
 IdProduct INT IDENTITY(1,1) PRIMARY KEY,
@@ -34,9 +29,9 @@ ProductName NVARCHAR(2048),
 ProductNumber NCHAR(64),
 Standard MONEY,
 ListPrice MONEY,
-ProductCategory INT,
+ProductCategory NVARCHAR(2048),
 ModifiedDate DATETIME,
-FOREIGN KEY (ProductCategory) REFERENCES STAGE.ProductCategory(IdProductCategory)
+
 )
 CREATE TABLE STAGE.BillHeader(
 IdBillHeader INT IDENTITY(1,1) PRIMARY KEY,
