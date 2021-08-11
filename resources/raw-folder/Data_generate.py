@@ -2,7 +2,8 @@ import csv
 import os
 import random
 import datetime
-import faker from Faker
+from faker import Faker
+faker = Faker()
 
 
 def gen_Money(max):
@@ -25,7 +26,7 @@ def gen_Reference(rowNum):
 def gen_Customer_CSV(rowNum):
     csvfile=open('Customer.csv','w')
     csvwriter=csv.writer(csvfile,delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
-    csvwriter.writerow("Id","FirstName","LastName","Address","City","Country","DayOfBirth","Gender",)
+    csvwriter.writerow(["IdCustomer","FirstName","LastName","Address","City","Country","DayOfBirth","Gender","ModifiedDate"])
     for i in range(0,rowNum): 
         if(random.randint(0,1)==0):
             gender="Male"
@@ -35,20 +36,46 @@ def gen_Customer_CSV(rowNum):
             gender="Female"
             firstname=faker.first_name_female()
             lastname=faker.last_name_female()
-        csvwriter.writerow(i,firstname,lastname,faker.address(),faker.city(),faker.country(),gen_Day1(18,90),gender)
-def gen_ProductCategory_CSV():
-    csvfile=open('ProductCategory.csv','w')
-    csvwriter=csv.writer(csvfile,delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
-    csvwriter.writerow()
+        csvwriter.writerow([i,firstname,lastname,faker.address(),faker.city(),faker.country(),gen_Day1(18,90),gender,datetime.datetime.now()])
+##def gen_ProductCategory_CSV(rowNum):
+    ##csvfile=open('ProductCategory.csv','w')
+    ##csvwriter=csv.writer(csvfile,delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
+    ##csvwriter.writerow(["IdProductCategory","Name","ModifiedDate"])
+    ##for i in range(0,rowNum):
+        ##csvwriter.writerow([i,faker.text(max_nb_chars=20)],datetime.datetime.now())
 
 def gen_Product_CSV(rowNum):
     csvfile=open('Product.csv','w')
     csvwriter=csv.writer(csvfile,delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
-    csvwriter.writerow("Id","ProductName","ProductNumber","Standard","ListPrice")
+    csvwriter.writerow(["IdProduct","ProductName","ProductNumber","Standard","ListPrice","ProductCategory","ModifiedDate"])
+    for i in range(0,rowNum):
+        StandardCost=gen_Money(10000)
+        ListPrice=StandardCost+gen_Money(1000)
+        csvwriter.writerow([i,faker.text(max_nb_chars=20),faker.license_plate(),StandardCost,ListPrice,faker.text(max_nb_chars=20),datetime.datetime.now()])
 
-def gen_BillHeader_CSV(rowNum):
+def gen_BillHeader_CSV(rowNum,NumOfRef):
     csvfile=open('BillHeader.csv','w')
     csvwriter=csv.writer(csvfile,delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
-    csvwriter.writerow("id","")
+    csvwriter.writerow(["IdBillHeader","CustomerID","SubTotal","TaxAmt","Freight","TotalDue","ModifiedDate"])
     for i in range(0,rowNum):
-        csvwriter.writerow()
+        csvwriter.writerow([i,NumOfRef,0,gen_Money(50),gen_Money(50),0,datetime.datetime.now()])
+    #Subtotal=sum(BillDetail.LineTotal)
+    #TotalDue=SubTotal+TaxAmt+Freight
+def gen_BillDetail_CSV(rowNum,NumOfRef):
+    csvfile=open('BillDetail.csv','w')
+    csvwriter=csv.writer(csvfile,delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
+    csvwriter.writerow(["IdBillDetail","BillHeaderID","OrderQty","ProductID","UnitPrice","UnitPriceDiscount","LineTotal","ModifiedDate"])
+    for i in range(0,rowNum):
+        csvwriter.writerow([i,NumOfRef["Bill"],random.randint(1,30),NumOfRef["Product"],0,gen_Money(50),0,datetime.datetime.now()])
+    #UnitPrice=Product.ListPrice
+    #LineTotal=(UnitPrice-UnitPriceDiscount)*OrderQty
+Cus_num=10000
+Prod_num=100000
+ProdCate_num=100
+BHeader_num=1000000
+BDetail_num=5000000
+gen_Customer_CSV(Cus_num)
+##gen_ProductCategory_CSV(ProdCate_num)
+gen_Product_CSV(Prod_num)
+gen_BillHeader_CSV(BHeader_num,Cus_num)
+gen_BillDetail_CSV(BDetail_num,{"Bill":BHeader_num,"Product":Prod_num})
