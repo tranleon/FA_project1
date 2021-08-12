@@ -1,118 +1,119 @@
-IF DB_ID('Project1') IS NOT NULL
-DROP DATABASE Project1_DW;
-CREATE DATABASE Project1_DW;
-go
+-- Create database
+USE ROLE SYSADMIN;
+CREATE OR REPLACE DATABASE Project1
+COMMENT = 'Database for Project 1 FA';
+USE DATABASE Project1;
+-- Create schema
 CREATE SCHEMA STAGE;
-go
 CREATE SCHEMA NDS;
-go
 CREATE SCHEMA DDS;
-go
-CREATE LOGIN STAGER WITH PASSWORD = '123456', DEFAULT_DATABASE = Project1;
-GO
-CREATE TABLE STAGE.Customer(
-IdCustomer INT IDENTITY(1,1) PRIMARY KEY,
-FirstName NVARCHAR(2048),
-LastName NVARCHAR(2048),
-Address NVARCHAR(2048),
-City NVARCHAR(2048),
-Country NVARCHAR(2048),
-DayOfBirth DATETIME,
-Gender NCHAR(64),
-ModifiedDate DATETIME
-)
 
+CREATE TABLE STAGE.Customer(
+StagingCustomerID INT IDENTITY(1,1) PRIMARY KEY,
+CustomerID INT NOT NULL UNIQUE,
+FirstName NVARCHAR(2048) NOT NULL,
+LastName NVARCHAR(2048) NOT NULL,
+Address NVARCHAR(2048) NOT NULL,
+City NVARCHAR(2048) NOT NULL,
+State NVARCHAR(2048) NOT NULL,
+Territory NVARCHAR(2048) NOT NULL,
+DateOfBirth DATETIME,
+Gender NCHAR(64),
+ModifiedDate DATETIME NOT NULL
+);
 
 CREATE TABLE STAGE.Product(
-IdProduct INT IDENTITY(1,1) PRIMARY KEY,
-ProductName NVARCHAR(2048),
+StagingProductID INT IDENTITY(1,1) PRIMARY KEY,
+ProductID INT NOT NULL UNIQUE,
+ProductName NVARCHAR(2048) NOT NULL,
 ProductNumber NCHAR(64),
-Standard MONEY,
-ListPrice MONEY,
+StandardCost FLOAT NOT NULL,
+ListPrice FLOAT NOT NULL,
 ProductCategory NVARCHAR(2048),
-ModifiedDate DATETIME,
+ModifiedDate DATETIME NOT NULL
+);
 
-)
-CREATE TABLE STAGE.BillHeader(
-IdBillHeader INT IDENTITY(1,1) PRIMARY KEY,
-CustomerID INT,
-SubTotal MONEY,
-TaxAmt MONEY,
-Freight MONEY,
-TotalDue MONEY,
-ModifiedDate DATETIME
-FOREIGN KEY (CustomerID) REFERENCES STAGE.Customer(IdCustomer)
-)
 CREATE TABLE STAGE.BillDetail(
-IdBillDetail INT IDENTITY(1,1) PRIMARY KEY,
-BillHeaderID INT,
-OrderQty INT,
-ProductID INT,
-UnitPrice MONEY,
-UnitPriceDiscount MONEY,
-LineTotal MONEY,
+StagingBillDetailID INT IDENTITY(1,1) PRIMARY KEY,
+BillDetailID INT NOT NULL UNIQUE,
+BillHeaderID INT NOT NULL,
+OrderDate DATETIME NOT NULL,
+CustomerID INT NOT NULL,
+ProductID INT NOT NULL,
+OrderQty INT NOT NULL,
+UnitPrice FLOAT,
+LineProfit FLOAT,
 ModifiedDate DATETIME
-FOREIGN KEY (BillHeaderID) REFERENCES STAGE.BillHeader(IdBillHeader),
-FOREIGN KEY (ProductID) REFERENCES STAGE.Product(IdProduct)
-)
-go
+);
 
 CREATE TABLE NDS.Customer(
-IdCustomer INT IDENTITY(1,1) PRIMARY KEY,
-FirstName NVARCHAR(2048),
-LastName NVARCHAR(2048),
-DayOfBirth DATETIME,
+CustomerID INT IDENTITY(1,1) PRIMARY KEY,
+FirstName NVARCHAR(2048) NOT NULL,
+LastName NVARCHAR(2048) NOT NULL,
+DateOfBirth DATETIME,
 Gender NCHAR(64),
-ModifiedDate DATETIME
-)
+ModifiedDate DATETIME NOT NULL
+);
 
-CREATE TABLE ADDRESS(
-IdAdress INT IDENTITY(1,1) PRIMARY KEY,
-IdCustomer INT,
-Address NVARCHAR(2048),
-City NVARCHAR(2048),
-Country NVARCHAR(2048),
-ModifiedDate DATETIME,
-FOREIGN KEY (IdCustomer) REFERENCES NDS.Customer(IdCustomer)
-)
+CREATE TABLE NDS.Territory(
+TerritoryID INT IDENTITY(1,1) PRIMARY KEY,
+Territory INT NOT NULL,
+ModifiedDate DATETIME NOT NULL
+);
+
+CREATE TABLE NDS.State(
+StateID INT IDENTITY(1,1) PRIMARY KEY,
+State NVARCHAR(2048) NOT NULL,
+TerritoryID INT NOT NULL,
+ModifiedDate DATETIME NOT NULL,
+FOREIGN KEY (TerritoryID) REFERENCES NDS.Territory(TerritoryID)
+);
+
+CREATE OR REPLACE TABLE NDS.Address(
+AddressID INT IDENTITY(1,1) PRIMARY KEY,
+CustomerID INT NOT NULL,
+Address NVARCHAR(2048) NOT NULL,
+City NVARCHAR(2048) NOT NULL,
+StateID INT NOT NULL,
+ModifiedDate DATETIME NOT NULL,
+FOREIGN KEY (CustomerID) REFERENCES NDS.Customer(CustomerID),
+FOREIGN KEY (StateID) REFERENCES NDS.State(StateID)
+);
+
 
 CREATE TABLE NDS.ProductCategory(
-IdProductCategory INT IDENTITY(1,1) PRIMARY KEY,
-Name  NVARCHAR(2048),
-ModifiedDate DATETIME
-)
+ProductCategoryID INT IDENTITY(1,1) PRIMARY KEY,
+Name NVARCHAR(2048) NOT NULL,
+ModifiedDate DATETIME NOT NULL
+);
 
 CREATE TABLE NDS.Product(
-IdProduct INT IDENTITY(1,1) PRIMARY KEY,
-ProductName NVARCHAR(2048),
-ProductNumber NCHAR(64),
-Standard MONEY,
-ListPrice MONEY,
-ProductCategory INT,
-ModifiedDate DATETIME,
-FOREIGN KEY (ProductCategory) REFERENCES NDS.ProductCategory(IdProductCategory)
-)
+ProductID INT IDENTITY(1,1) PRIMARY KEY,
+ProductName NVARCHAR(2048) NOT NULL,
+ProductNumber NCHAR(64) NOT NULL,
+StandardCost FLOAT NOT NULL,
+ListPrice FLOAT NOT NULL,
+ProductCategoryID INT NOT NULL,
+ModifiedDate DATETIME NOT NULL,
+FOREIGN KEY (ProductCategoryID) REFERENCES NDS.ProductCategory(ProductCategoryID)
+);
 
 CREATE TABLE NDS.BillHeader(
-IdBillHeader INT IDENTITY(1,1) PRIMARY KEY,
-CustomerID INT,
-SubTotal MONEY,
-TaxAmt MONEY,
-Freight MONEY,
-TotalDue MONEY,
-ModifiedDate DATETIME
-FOREIGN KEY (CustomerID) REFERENCES NDS.Customer(IdCustomer)
-)
+BillHeaderID INT IDENTITY(1,1) PRIMARY KEY,
+CustomerID INT NOT NULL,
+SubTotal FLOAT,
+ModifiedDate DATETIME NOT NULL,
+FOREIGN KEY (CustomerID) REFERENCES NDS.Customer(CustomerID)
+);
 
 CREATE TABLE NDS.BillDetail(
-IdBillDetail INT IDENTITY(1,1) PRIMARY KEY,
-BillHeaderID INT,
-OrderQty INT,
-ProductID INT,
-UnitPrice MONEY,
-UnitPriceDiscount MONEY,
-LineTotal MONEY,
-ModifiedDate DATETIME
-FOREIGN KEY (BillHeaderID) REFERENCES NDS.BillHeader(IdBillHeader),
-FOREIGN KEY (ProductID) REFERENCES NDS.Product(IdProduct)
-)
+BillDetailID INT IDENTITY(1,1) PRIMARY KEY,
+BillHeaderID INT NOT NULL,
+OrderQty INT NOT NULL,
+ProductID INT NOT NULL,
+UnitPrice FLOAT,
+LineProfit FLOAT,
+ModifiedDate DATETIME,
+FOREIGN KEY (BillHeaderID) REFERENCES NDS.BillHeader(BillHeaderID),
+FOREIGN KEY (ProductID) REFERENCES NDS.Product(ProductID)
+);
