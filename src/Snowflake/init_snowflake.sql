@@ -18,10 +18,10 @@ StagingProductID INT IDENTITY(1,1) PRIMARY KEY,
 ProductID INT NOT NULL UNIQUE,
 ProductName NVARCHAR(2048) NOT NULL,
 ProductNumber NCHAR(64),
-StandardCost MONEY NOT NULL,
-ListPrice MONEY NOT NULL,
+StandardCost FLOAT NOT NULL,
+ListPrice FLOAT NOT NULL,
 ProductCategory NVARCHAR(2048),
-ModifiedDate DATETIME NOT NULL,
+ModifiedDate DATETIME NOT NULL
 );
 
 CREATE TABLE STAGING.BillDetail(
@@ -32,11 +32,11 @@ OrderDate DATETIME NOT NULL,
 CustomerID INT NOT NULL,
 ProductID INT NOT NULL,
 OrderQty INT NOT NULL,
-UnitPrice MONEY,
-LineProfit MONEY,
-ModifiedDate DATETIME
-FOREIGN KEY (CustomerID) REFERENCES STAGING.Customer(CustomerID),
-FOREIGN KEY (ProductID) REFERENCES STAGING.Product(ProductID)
+UnitPrice FLOAT,
+LineProfit FLOAT,
+ModifiedDate DATETIME,
+FOREIGN KEY (CustomerID) REFERENCES STAGE.STAGE_Customer(CustomerID),
+FOREIGN KEY (ProductID) REFERENCES STAGE.STAGE_Customer(CustomerID)
 );
 
 CREATE TABLE dbo.LastModifiedDate(
