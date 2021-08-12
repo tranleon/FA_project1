@@ -1,6 +1,53 @@
+--TABLE
+CREATE TABLE STAGING.Customer(
+StagingCustomerID INT IDENTITY(1,1) PRIMARY KEY,
+CustomerID INT NOT NULL UNIQUE,
+FirstName NVARCHAR(2048) NOT NULL,
+LastName NVARCHAR(2048) NOT NULL,
+Address NVARCHAR(2048) NOT NULL,
+City NVARCHAR(2048) NOT NULL,
+State NVARCHAR(2048) NOT NULL,
+Territory NVARCHAR(2048) NOT NULL,
+DateOfBirth DATETIME,
+Gender NCHAR(64),
+ModifiedDate DATETIME NOT NULL
+);
+
+CREATE TABLE STAGING.Product(
+StagingProductID INT IDENTITY(1,1) PRIMARY KEY,
+ProductID INT NOT NULL UNIQUE,
+ProductName NVARCHAR(2048) NOT NULL,
+ProductNumber NCHAR(64),
+StandardCost MONEY NOT NULL,
+ListPrice MONEY NOT NULL,
+ProductCategory NVARCHAR(2048),
+ModifiedDate DATETIME NOT NULL,
+);
+
+CREATE TABLE STAGING.BillDetail(
+StagingBillDetailID INT IDENTITY(1,1) PRIMARY KEY,
+BillDetailID INT NOT NULL UNIQUE,
+BillHeaderID INT NOT NULL,
+OrderDate DATETIME NOT NULL,
+CustomerID INT NOT NULL,
+ProductID INT NOT NULL,
+OrderQty INT NOT NULL,
+UnitPrice MONEY,
+LineProfit MONEY,
+ModifiedDate DATETIME
+FOREIGN KEY (CustomerID) REFERENCES STAGING.Customer(CustomerID),
+FOREIGN KEY (ProductID) REFERENCES STAGING.Product(ProductID)
+);
+
+CREATE TABLE dbo.LastModifiedDate(
+Customer DATETIME,
+Product DATETIME,
+Bill DATETIME
+);
+
 --PROCEDURE
 use project1_db;
-create or replace procedure data_into_locationdivision()
+create or replace procedure data_into_location_division()
 returns string
 language javascript
 as
