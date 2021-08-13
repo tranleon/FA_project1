@@ -123,12 +123,10 @@ FOREIGN KEY (ProductID) REFERENCES NDS.Product(ProductID)
 --CREATE PROCEDURE
 ---insert data into nds.territory
 create or replace procedure data_into_nds_territory()
->>>>>>> Stashed changes
 returns string
 language javascript
 as
 $$ 
-
     var sql_command =` select max(t.territoryid) maxid from nds.territory t`;
     var statement1 = snowflake.createStatement( {sqlText: sql_command} );
     var result_set1 = statement1.execute();
@@ -203,3 +201,40 @@ $$
     result_set1.next();
     return("Number of rows affected: " +result_set1.getColumnValue(1));
 $$ 
+---insert data into nds.product
+create or replace procedure data_into_nds_product()
+returns string
+language javascript
+as
+$$ 
+    var sql_command =` select max(t.productid) maxid from nds.product t`;
+    var statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    var result_set1 = statement1.execute();
+    result_set1.next();
+    if (result_set1.getColumnValue(1)===null)
+    {
+    maxid=0;
+    }
+    else
+    {
+    maxid=result_set1.getColumnValue(1);
+    }
+    sql_command=`update nds.product
+        set productname=t.productname,standardcost=t.standardcost,listprice=t.listprice,productcategoryid=t.productcategoryid,modifieddate=current_date()
+        from (select sp1.productname,sp1.productnumber,sp1.standardcost,sp1.listprice,np1.productcategoryid from
+                (select sp.productname,sp.productnumber,sp.standardcost,sp.listprice,sp.productcategory from stage.product sp) sp1 
+                    inner join (select np.productcategoryid,np.name from nds.productcategory np) np1 on np1.name=sp1.productcategory) t
+          where nds.product.productnumber=t.productnumber`
+    var statement2 = snowflake.createStatement( {sqlText: sql_command} );
+    var result_set2 = statement2.execute();
+    result_set2.next();
+    sql_command= `insert into nds.product select row_number() over (ORDER BY 1)+ ` + maxid + ` rn,t.productname,t.productnumber,t.standardcost,t.listprice,t.productcategoryid,CURRENT_DATE() from 
+    (select sp1.productname,sp1.productnumber,sp1.standardcost,sp1.listprice,np1.productcategoryid from
+        (select sp.productname,sp.productnumber,sp.standardcost,sp.listprice,sp.productcategory from stage.product sp) sp1 
+            inner join (select np.productcategoryid,np.name from nds.productcategory np) np1 on np1.name=sp1.productcategory) t
+    where t.productnumber not in(select np2.productnumber from nds.product np2)`
+    statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    return("Number of rows affected: " + (+result_set1.getColumnValue(1))+ +result_set2.getColumnValue(1));
+$$
