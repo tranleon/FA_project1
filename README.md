@@ -24,5 +24,5 @@ Building the data pipeline
 3. [Download](https://sfc-repo.snowflakecomputing.com/snowsql/index.html) and install snowsql CLI.
 4. Go to %USERPROFILE%\.snowsql\ to change login config for better automation, using [this document](https://docs.snowflake.com/en/user-guide/snowsql-config.html).
 5. Generate data: `python Data_generator.py`, copy into resources/raw-folder.
-6. Run [Project1.sln](./resources/SSIS/Project1/Project1.sln), change "ProjectPath" variable to your project path.
-7. Deploy [Project1.sln](./resources/SSIS/Project1/Project1.sln) on SQL Server.
+6. Run /src/SSIS/Project1/Project1.sln, change "ProjectPath" variable to your project path.
+7. Deploy Project1.sln on SQL Server.
