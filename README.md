@@ -1,6 +1,6 @@
 # FA_project1
 ## Project Topic
-###E-commerce/Retails
+### E-commerce/Retails
 Sales/Customer analysis and trend prediction.
 
 ## Decsription of this project
