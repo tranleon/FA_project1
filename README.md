@@ -19,8 +19,8 @@ Building the data pipeline
 7. Visualize your data
 
 ## How to setup
-1. Login into MSSQL and run [init_mssql.sql](./src/mssql/init_mssql.sql).
-2. Authen SnowSQL and run [init_snowflake.sql](./src/Snowflake/init_snowfalke.sql).
+1. Login into MSSQL and run [init_mssql.sql](./src/MSSQL/init_mssql.sql).
+2. Authen SnowSQL and run [init_snowflake.sql](./src/Snowflake/init_snowflake.sql).
 3. [Download](https://sfc-repo.snowflakecomputing.com/snowsql/index.html) and install snowsql CLI.
 4. Go to %USERPROFILE%\.snowsql\ to change login config for better automation, using [this document](https://docs.snowflake.com/en/user-guide/snowsql-config.html).
 5. Generate data: `python Data_generator.py`, copy into resources/raw-folder.
