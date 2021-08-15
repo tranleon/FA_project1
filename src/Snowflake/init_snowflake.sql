@@ -47,12 +47,12 @@ LineProfit FLOAT,
 ModifiedDate DATETIME
 );
 
-CREATE TABLE NDS.ETLDATE(
+CREATE TABLE utils.etldate(
 ETLDATEID INT PRIMARY KEY,
 LSET DATETIME,
 CET DATETIME
 );
-insert into NDS.ETLDATE VALUES(1,'1/1/1975',CURRENT_TIMESTAMP());
+insert into utils.etldate VALUES(1,'1/1/1975',CURRENT_TIMESTAMP());
 
 CREATE TABLE NDS.Customer(
 CustomerID INT PRIMARY KEY,
@@ -133,19 +133,29 @@ returns string
 language javascript
 as
 $$
-    var sqlcommand=`update nds.etldate t set t.CET=current_timestamp where t.etldateid=(select max(t1.etldateid) from nds.etldate t1)`
+    try {
+    var sql_command=`update utils.etldate t set t.CET=current_timestamp where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`
     var statement1 = snowflake.createStatement( {sqlText: sql_command});
     var result_set1 = statement1.execute();
     result_set1.next();
-    return("Number of rows affected: " +result_set1.getColumnValue(1));
-$$
+    result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
+$$;
 ---Add SLET in etldate table everytime etl ends
 create or replace procedure add_lset()
 returns string
 language javascript
 as
 $$
-    var sql_command =`select t.etldateid,t.CET from nds.etldate t where t.etldateid=(select max(t1.etldateid) maxid from nds.etldate t1)`;
+    var sql_command =`select t.etldateid,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) maxid from utils.etldate t1)`;
     var statement1 = snowflake.createStatement( {sqlText: sql_command} );
     var result_set1 = statement1.execute();
     result_set1.next();
@@ -159,12 +169,22 @@ $$
     maxid=result_set1.getColumnValue(1);
     CET=result_set1.getColumnValue(2);
     }
-    sqlcommand=`insert into nds.etldate(etldateid,lset) values(:1 +1,:2)`
+     try {
+    sqlcommand=`insert into utils.etldate(etldateid,lset) values(:1 +1,:2)`
     statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,cet]});
     result_set1 = statement1.execute();
     result_set1.next();
-    return("Number of rows affected: " +result_set1.getColumnValue(1));
-$$
+    result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
+$$;
 
 ---insert data into nds.territory
 create or replace procedure data_into_nds_territory()
@@ -172,7 +192,7 @@ returns string
 language javascript
 as
 $$ 
-    var sql_command =`select t.CET,t.LSET from nds.etldate t where t.etldateid=(select max(t1.etldateid) from nds.etldate t1)`;
+    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
     var statement1 = snowflake.createStatement( {sqlText: sql_command} );
     var result_set1 = statement1.execute();
     result_set1.next();
@@ -190,13 +210,23 @@ $$
     {
     maxid=result_set1.getColumnValue(1);
     }
+    try {
     sql_command= `insert into nds.territory select row_number() over (ORDER BY 1) + :1 rn,c1.territory,CURRENT_TIMESTAMP() from 
     (select distinct(c.territory) territory from stage.customer c where c.modifieddate>= :2 and c.modifieddate < :3 ) c1 
     where c1.territory not in (select nt.territory from nds.territory nt)`
     statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]});
     result_set1 = statement1.execute();
     result_set1.next();
-    return("Number of rows affected: " +result_set1.getColumnValue(1));
+    result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
 $$;
 ---insert data into nds.state
 create or replace procedure data_into_nds_state()
@@ -204,7 +234,7 @@ returns string
 language javascript
 as
 $$ 
-    var sql_command =`select t.CET,t.LSET from nds.etldate t where t.etldateid=(select max(t1.etldateid) from nds.etldate t1)`;
+    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
     var statement1 = snowflake.createStatement( {sqlText: sql_command} );
     var result_set1 = statement1.execute();
     result_set1.next();
@@ -222,6 +252,7 @@ $$
     {
     maxid=result_set1.getColumnValue(1);
     }
+    try {
     sql_command= `insert into nds.state select row_number() over (ORDER BY 1)+ :1 rn,t.state,t.territoryid,CURRENT_TIMESTAMP() from
     (select c1.state,nt.territoryid 
     from (select distinct c.state,c.territory 
@@ -230,7 +261,16 @@ $$
     statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]} );
     result_set1 = statement1.execute();
     result_set1.next();
-    return("Number of rows affected: " +result_set1.getColumnValue(1));
+    result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
 $$;
 ---insert data into nds.productcategory
 create or replace procedure data_into_nds_productcategory()
@@ -238,7 +278,7 @@ returns string
 language javascript
 as
 $$ 
-    var sql_command =`select t.CET,t.LSET from nds.etldate t where t.etldateid=(select max(t1.etldateid) from nds.etldate t1)`;
+    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
     var statement1 = snowflake.createStatement( {sqlText: sql_command} );
     var result_set1 = statement1.execute();
     result_set1.next();
@@ -256,13 +296,22 @@ $$
     {
     maxid=result_set1.getColumnValue(1);
     }
+    try {
     sql_command= `insert into nds.productcategory select row_number() over (ORDER BY 1)+ :1 rn,sp1.productcategory,CURRENT_TIMESTAMP() from
     (select distinct(sp.productcategory) from stage.product sp where sp.modifieddate>= :2 and sp.modifieddate < :3 ) sp1
     where sp1.productcategory not in(select np.name from nds.productcategory np)`
     statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]} );
     result_set1 = statement1.execute();
-    result_set1.next();
-    return("Number of rows affected: " +result_set1.getColumnValue(1));
+    result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
 $$;
 ---insert data into nds.product
 create or replace procedure data_into_nds_product()
@@ -270,7 +319,7 @@ returns string
 language javascript
 as
 $$ 
-    var sql_command =`select t.CET,t.LSET from nds.etldate t where t.etldateid=(select max(t1.etldateid) from nds.etldate t1)`;
+    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
     var statement1 = snowflake.createStatement( {sqlText: sql_command} );
     var result_set1 = statement1.execute();
     result_set1.next();
@@ -288,6 +337,7 @@ $$
     {
     maxid=result_set1.getColumnValue(1);
     }
+    try {
     sql_command=`update nds.product
         set productname=t.productname,standardcost=t.standardcost,listprice=t.listprice,productcategoryid=t.productcategoryid,modifieddate=CURRENT_TIMESTAMP()
         from (select sp1.productname,sp1.productnumber,sp1.standardcost,sp1.listprice,np1.productcategoryid from
@@ -305,7 +355,16 @@ $$
     statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]} );
     result_set1 = statement1.execute();
     result_set1.next();
-    return("Number of rows affected: " + (+result_set1.getColumnValue(1))+ +result_set2.getColumnValue(1));
+    result = "Number of rows affected: " + (+result_set1.getColumnValue(1))+ +result_set2.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
 $$;
 ---insert data into nds.customer
 create or replace procedure data_into_nds_customer()
@@ -313,7 +372,7 @@ returns string
 language javascript
 as
 $$ 
-    var sql_command =`select t.CET,t.LSET from nds.etldate t where t.etldateid=(select max(t1.etldateid) from nds.etldate t1)`;
+    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
     var statement1 = snowflake.createStatement( {sqlText: sql_command} );
     var result_set1 = statement1.execute();
     result_set1.next();
@@ -331,24 +390,33 @@ $$
     {
     maxid=result_set1.getColumnValue(1);
     }
+    try {
     sql_command= `merge into nds.customer using (select st.*,row_number() over (order by 1) rn from stage.customer st where st.modifieddate>=:1 and  st.modifieddate < :2) t
     on t.account=nds.customer.account
-    when match then
-        update set nds.customer.FIRSTNAME=t.firsname,nds.customer.LASTNAME=t.LASTNAME,nds.customer.DATEOFBIRTH=t.DATEOFBIRTH,nds.customer.GENDER=t.GENDER,nds.customer.MODIFIEDDATE=current_timestamp()
-    when not match then
-        insert into nds.customer values(t.rn+:3,t.ACCOUNT,t.FIRSTNAME,t.LASTNAME,t.DATEOFBIRTH,t.GENDER,current_timestamp())`
+    when matched then
+        update set FIRSTNAME=t.FIRSTNAME,LASTNAME=t.LASTNAME,DATEOFBIRTH=t.DATEOFBIRTH,GENDER=t.GENDER,MODIFIEDDATE=current_timestamp()
+    when not matched then
+        insert (customerid,ACCOUNT,FIRSTNAME,LASTNAME,DATEOFBIRTH,GENDER,modifieddate) values (t.rn+:3,t.ACCOUNT,t.FIRSTNAME,t.LASTNAME,t.DATEOFBIRTH,t.GENDER,current_timestamp())`
     statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[LSET,CET,maxid]} );
     result_set1 = statement1.execute();
-    result_set1.next();
-    return("Number of rows affected: " +result_set1.getColumnValue(1));
-$$
+    result_set1.next();result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
+$$;
 ---insert data into nds.address
 create or replace procedure data_into_nds_address()
 returns string
 language javascript
 as
 $$ 
-    var sql_command =`select t.CET,t.LSET from nds.etldate t where t.etldateid=(select max(t1.etldateid) from nds.etldate t1)`;
+    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
     var statement1 = snowflake.createStatement( {sqlText: sql_command} );
     var result_set1 = statement1.execute();
     result_set1.next();
@@ -366,6 +434,7 @@ $$
     {
     maxid=result_set1.getColumnValue(1);
     }
+    try {
     sql_command= `insert into nds.address select st1.rn + :1,nc1.customerid,st1.address,st1.city,ns2.stateid,current_timestamp() from 
     (select st.account,st.address,st.city,st.state,st.territory,row_number() over (order by 1) rn from stage.customer st where st.modifieddate>=:2 and  st.modifieddate < :3) st1
     inner join (select nc.customerid,nc.account from nds.customer nc) nc1 on nc1.account=st1.account
@@ -375,5 +444,14 @@ $$
     statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]} );
     result_set1 = statement1.execute();
     result_set1.next();
-    return("Number of rows affected: " +result_set1.getColumnValue(1));
-$$
+    result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
+$$;
