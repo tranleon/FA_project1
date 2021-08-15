@@ -366,50 +366,7 @@ $$
     }
     return(result);
 $$;
----insert data into nds.customer
-create or replace procedure data_into_nds_customer()
-returns string
-language javascript
-as
-$$ 
-    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
-    var statement1 = snowflake.createStatement( {sqlText: sql_command} );
-    var result_set1 = statement1.execute();
-    result_set1.next();
-    var LSET=result_set1.getColumnValue(1);
-    var CET=result_set1.getColumnValue(2);
-    sql_command =` select max(t.customerid) maxid from nds.customer t`;
-    statement1 = snowflake.createStatement( {sqlText: sql_command} );
-    result_set1 = statement1.execute();
-    result_set1.next();
-    if (result_set1.getColumnValue(1)===null)
-    {
-    maxid=0;
-    }
-    else
-    {
-    maxid=result_set1.getColumnValue(1);
-    }
-    try {
-    sql_command= `merge into nds.customer using (select st.*,row_number() over (order by 1) rn from stage.customer st where st.modifieddate>=:1 and  st.modifieddate < :2) t
-    on t.account=nds.customer.account
-    when matched then
-        update set FIRSTNAME=t.FIRSTNAME,LASTNAME=t.LASTNAME,DATEOFBIRTH=t.DATEOFBIRTH,GENDER=t.GENDER,MODIFIEDDATE=current_timestamp()
-    when not matched then
-        insert (customerid,ACCOUNT,FIRSTNAME,LASTNAME,DATEOFBIRTH,GENDER,modifieddate) values (t.rn+:3,t.ACCOUNT,t.FIRSTNAME,t.LASTNAME,t.DATEOFBIRTH,t.GENDER,current_timestamp())`
-    statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[LSET,CET,maxid]} );
-    result_set1 = statement1.execute();
-    result_set1.next();result = "Number of rows affected: " +result_set1.getColumnValue(1);
-    }
-    catch (err)  {
-        result = "Failed";
-        snowflake.execute({
-        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
-        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
-        
-    }
-    return(result);
-$$;
+
 ---insert data into nds.address
 create or replace procedure data_into_nds_address()
 returns string
@@ -435,9 +392,8 @@ $$
     maxid=result_set1.getColumnValue(1);
     }
     try {
-    sql_command= `insert into nds.address select st1.rn + :1,nc1.customerid,st1.address,st1.city,ns2.stateid,current_timestamp() from 
-    (select st.account,st.address,st.city,st.state,st.territory,row_number() over (order by 1) rn from stage.customer st where st.modifieddate>=:2 and  st.modifieddate < :3) st1
-    inner join (select nc.customerid,nc.account from nds.customer nc) nc1 on nc1.account=st1.account
+    sql_command= `insert into nds.address select st1.rn + :1,st1.address,st1.city,ns2.stateid,current_timestamp() from 
+    (select st.address,st.city,st.state,st.territory,row_number() over (order by 1) rn from stage.customer st where st.modifieddate>=:2 and  st.modifieddate < :3) st1
     inner join (select ns1.stateid,ns1.state,nt1.territory from 
                     (select ns.stateid,ns.state,ns.territoryid from nds.state ns) ns1 inner join 
                       (select nt.territoryid,nt.territory from nds.territory nt) nt1 on ns1.territoryid=nt1.territoryid) ns2 on ns2.state= st1.state and ns2.territory=st1.territory`
@@ -445,6 +401,57 @@ $$
     result_set1 = statement1.execute();
     result_set1.next();
     result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
+$$;
+
+---insert data into nds.customer
+create or replace procedure data_into_nds_customer()
+returns string
+language javascript
+as
+$$ 
+    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
+    var statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    var result_set1 = statement1.execute();
+    result_set1.next();
+    var LSET=result_set1.getColumnValue(1);
+    var CET=result_set1.getColumnValue(2);
+    sql_command =` select max(t.customerid) maxid from nds.customer t`;
+    statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    if (result_set1.getColumnValue(1)===null)
+    {
+    maxid=0;
+    }
+    else
+    {
+    maxid=result_set1.getColumnValue(1);
+    }
+    try {
+    sql_command= `merge into nds.customer 
+    using (select row_number() over (order by 1) rn,sc.ACCOUNT,sc.FIRSTNAME,sc.LASTNAME,sc.DATEOFBIRTH,sc.GENDER,ns2.addressid,current_timestamp() from stage.customer sc
+           inner join (select na1.addressid,na1.address,ns1.state,nt1.territory from 
+                    (select na.addressid,na.address,na.city,na.stateid from nds.address na) na1 inner join
+                    (select ns.stateid,ns.state,ns.territoryid from nds.state ns) ns1 on na1.stateid=ns1.stateid inner join 
+                      (select nt.territoryid,nt.territory from nds.territory nt) nt1 on ns1.territoryid=nt1.territoryid) ns2
+            on ns2.address=sc.address and ns2.address=sc.address and ns2.state=sc.state and ns2.territory=sc.territory) t
+    on t.account=nds.customer.account
+    when matched then
+        update set FIRSTNAME=t.FIRSTNAME,LASTNAME=t.LASTNAME,DATEOFBIRTH=t.DATEOFBIRTH,GENDER=t.GENDER,addressid=t.addressid,MODIFIEDDATE=current_timestamp()
+    when not matched then
+        insert (customerid,ACCOUNT,FIRSTNAME,LASTNAME,DATEOFBIRTH,GENDER,addressid,modifieddate) values (t.rn+:3,t.ACCOUNT,t.FIRSTNAME,t.LASTNAME,t.DATEOFBIRTH,t.GENDER,t.addressid,current_timestamp())`
+    statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[LSET,CET,maxid]} );
+    result_set1 = statement1.execute();
+    result_set1.next();result = "Number of rows affected: " +result_set1.getColumnValue(1);
     }
     catch (err)  {
         result = "Failed";
@@ -480,11 +487,11 @@ $$
     maxid=result_set1.getColumnValue(1);
     }
     try {
-    sql_command= `insert into nds.billheader select row_number() over(order by 1) + :1 rn,nc1.CUSTOMERID,sb1.SUBTOTAL ,sb1.UUID,current_timestamp()
-    from (select sb.BILLHEADERID,sb.UUID,sb.CUSTOMERID,sum(sb.ORDERQTY*sb.UNITPRICE) SUBTOTAL 
+    sql_command= `insert into nds.billheader select row_number() over(order by 1) + :1 rn,sb1.orderdate,nc1.CUSTOMERID,sb1.SUBTOTAL ,sb1.UUID,current_timestamp()
+    from (select sb.BILLHEADERID,sb.UUID,sb.CUSTOMERID,sum(sb.ORDERQTY*sb.UNITPRICE) SUBTOTAL,sb.orderdate
             from stage.billdetail sb 
             where sb.modifieddate>=:2 and  sb.modifieddate < :3
-            group by sb.billheaderid,sb.CUSTOMERID,sb.UUID) sb1
+            group by sb.billheaderid,sb.CUSTOMERID,sb.UUID,sb.orderdate) sb1
     inner join (select sc.customerid,sc.account from stage.customer sc) sc1 on sc1.customerid=sb1.customerid
     inner join (select nc.account,nc.customerid from nds.customer nc ) nc1 on sc1.account=nc1.account`
     statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]} );
