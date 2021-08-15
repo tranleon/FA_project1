@@ -42,15 +42,15 @@ def gen_Product_CSV(rowNum):
     time_stamp = datetime.datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p")
     csvfile = open(f'ProductData-{time_stamp}.csv','w', newline='')
     csvwriter = csv.writer(csvfile,delimiter=',',quotechar='"',quoting=csv.QUOTE_MINIMAL)
-    csvwriter.writerow(["ProductID","ProductName","ProductNumber","StandardCost","ListPrice","ProductCategory","ModifiedDate"])
+    csvwriter.writerow(["ProductID","ProductNumber","ProductName","StandardCost","ListPrice","ProductCategory","ModifiedDate"])
     for i in range(1,rowNum+1):
         StandardCost = gen_Money(10000)
         ListPrice = StandardCost+gen_Money(1000)
         Category = random.choices(["Clothing","Novelty Items","Toys","Packing Materials",
                                    "Accessories","Sports","Personal Care"], 
                                 weights=[6,4,1,3,7,1,3], k=1)[0] 
-        csvwriter.writerow([i,faker.text(max_nb_chars=20),faker.license_plate(),
-                            StandardCost,ListPrice,Category,datetime.datetime.now()])
+        csvwriter.writerow([i,faker.bothify(text='###-###'),faker.text(max_nb_chars=20),
+                            StandardCost,ListPrice,Category,datetime.datetime(2010,1,1)])
     csvfile.close()
     print("Fake product data: Done!")
 
