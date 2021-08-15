@@ -455,3 +455,96 @@ $$
     }
     return(result);
 $$;
+---insert data into nds.billheader
+create or replace procedure data_into_nds_billheader()
+returns string
+language javascript
+as
+$$ 
+    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
+    var statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    var result_set1 = statement1.execute();
+    result_set1.next();
+    var LSET=result_set1.getColumnValue(1);
+    var CET=result_set1.getColumnValue(2);
+    sql_command =` select max(t.billheaderid) maxid from nds.billheader t`;
+    statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    if (result_set1.getColumnValue(1)===null)
+    {
+    maxid=0;
+    }
+    else
+    {
+    maxid=result_set1.getColumnValue(1);
+    }
+    try {
+    sql_command= `insert into nds.billheader select row_number() over(order by 1) + :1 rn,nc1.CUSTOMERID,sb1.SUBTOTAL ,sb1.UUID,current_timestamp()
+    from (select sb.BILLHEADERID,sb.UUID,sb.CUSTOMERID,sum(sb.ORDERQTY*sb.UNITPRICE) SUBTOTAL 
+            from stage.billdetail sb 
+            where sb.modifieddate>=:2 and  sb.modifieddate < :3
+            group by sb.billheaderid,sb.CUSTOMERID,sb.UUID) sb1
+    inner join (select sc.customerid,sc.account from stage.customer sc) sc1 on sc1.customerid=sb1.customerid
+    inner join (select nc.account,nc.customerid from nds.customer nc ) nc1 on sc1.account=nc1.account`
+    statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
+$$;
+
+---insert data into nds.detail
+create or replace procedure data_into_nds_detail()
+returns string
+language javascript
+as
+$$ 
+    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
+    var statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    var result_set1 = statement1.execute();
+    result_set1.next();
+    var LSET=result_set1.getColumnValue(1);
+    var CET=result_set1.getColumnValue(2);
+    sql_command =` select max(t.billdetailid) maxid from nds.billdetail t`;
+    statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    if (result_set1.getColumnValue(1)===null)
+    {
+    maxid=0;
+    }
+    else
+    {
+    maxid=result_set1.getColumnValue(1);
+    }
+    try {
+    sql_command= `insert into nds.billdetail select row_number() over (order by 1) +:1 rn,nb1.BILLHEADERID,sb1.ORDERQTY,np1.productid,sb1.UNITPRICE,sb1.LINEPROFIT,current_timestamp()
+    from (select sb.ORDERQTY,sb.PRODUCTID,sb.UNITPRICE,sb.LINEPROFIT,sb.uuid 
+            from stage.billdetail sb 
+            where sb.modifieddate>=:2 and  sb.modifieddate < :3 )sb1
+    inner join (select nb.uuid,nb.billheaderid from nds.billheader nb) nb1 on nb1.uuid=sb1.uuid
+    inner join (select sp.productid,sp.productnumber from stage.product sp) sp1 on sb1.productid=sp1.productid
+    inner join (select np.productid,np.productnumber from nds.product np) np1 on np1.productnumber=sp1.productnumber`
+    statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
+$$;
