@@ -19,10 +19,26 @@ Building the data pipeline
 7. Visualize your data
 
 ## How to setup
-1. Login into MSSQL and run [init_mssql.sql](./src/MSSQL/init_mssql.sql).
-2. Authen SnowSQL and run [init_snowflake.sql](./src/Snowflake/init_snowflake.sql).
-3. [Download](https://sfc-repo.snowflakecomputing.com/snowsql/index.html) and install snowsql CLI.
-4. Go to %USERPROFILE%\.snowsql\ to change login config for better automation, using [this document](https://docs.snowflake.com/en/user-guide/snowsql-config.html).
-5. Generate data: `python Data_generator.py`, copy into resources/raw-folder.
-6. Run /src/SSIS/Project1/Project1.sln, change "ProjectPath" variable to your project path.
-7. Deploy Project1.sln on SQL Server.
+1. [Download](https://sfc-repo.snowflakecomputing.com/snowsql/index.html) and install snowsql CLI.
+2. Go to **%USERPROFILE%\\.snowsql\** to change login config for better automation, using [this document](https://docs.snowflake.com/en/user-guide/snowsql-config.html).
+3. Generate data: `python Data_generator.py`, copy into resources/raw-folder.
+4. Run **/src/SSIS/Project1.sln**, change **"ProjectPath"** variable to your project path and **"ErrorEmail"** variable to your email.
+5. Deploy **Project1.sln** on SQL Server:<br>
+    i. Open **Project1.ispac** under **Project1\bin\Development**.<br>
+    ii. Under **"Select Source"** follow the default Project Deployment, with the path pointing to the **"Project1.ispac"** package.<br>
+    iii. Under **"Select Destination"** enter the name of the server that hosts the SSIS catalog.<br>
+    iv. Select a path under the SSIS catalog, create a new folder **"Project1"**.<br>
+    v. Finalize the wizard by clicking Deploy.<br>
+6. Login into MSSQL, create a new *Credentials* (Server > Security > Credentials > New Credentials...), fill following field:<br>
+    i. Credential name: runcmd. <br>
+    ii. Identity: click ... > Advanced...> Find now and choice your current window account. <br>
+    iii. Enter your window account password in Password and Confirm password. <br>
+    iv. Click OK to create *Credentials*. <br>
+7. Run [init_mssql.sql](./src/MSSQL/init_mssql.sql) to set up local database, job and schedule, you can change schedule time and frequency as needed.
+8. Authen SnowSQL using proper user and run [init_snowflake.sql](./src/Snowflake/init_snowflake.sql).
+9. Open **PowerBI**, click Get Data, search for Snowflake.
+10. Connect to Snowflake server using your snowflake account.
+
+## Snowflake trainer account
+1. User: longbv1               Password: abc123
+2. User: mainq2                Password: abc123
