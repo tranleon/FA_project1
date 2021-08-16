@@ -4,34 +4,37 @@ CREATE OR REPLACE DATABASE Project1
 COMMENT = 'Database for Project 1 FA';
 USE DATABASE Project1;
 -- Create schema
-CREATE SCHEMA STAGE;
-CREATE SCHEMA NDS;
-CREATE SCHEMA DDS;
+CREATE OR REPLACE SCHEMA STAGE;
+CREATE OR REPLACE SCHEMA NDS;
+CREATE OR REPLACE SCHEMA DDS;
+CREATE OR REPLACE SCHEMA UTILS;
 
 CREATE TABLE STAGE.Customer(
 CustomerID INT PRIMARY KEY,
-FirstName NVARCHAR(2048) NOT NULL,
-LastName NVARCHAR(2048) NOT NULL,
-Address NVARCHAR(2048) NOT NULL,
-City NVARCHAR(2048) NOT NULL,
-State NVARCHAR(2048) NOT NULL,
-Territory NVARCHAR(2048) NOT NULL,
-DateOfBirth DATETIME,
-Gender NCHAR(64),
+ACCOUNT VARCHAR(50),
+FirstName NVARCHAR(50) NOT NULL,
+LastName NVARCHAR(50) NOT NULL,
+Address NVARCHAR(50) NOT NULL,
+City NVARCHAR(50) NOT NULL,
+State NVARCHAR(50) NOT NULL,
+Territory NVARCHAR(50) NOT NULL,
+DateOfBirth DATETIME NOT NULL,
+Gender NCHAR(10),
 ModifiedDate DATETIME NOT NULL
 );
 
 CREATE TABLE STAGE.Product(
-ProductID INT PRIMARY,
-ProductNumber NVARCHAR(2048) NOT NULL,
-ProductName NVARCHAR(2048) NOT NULL,
+ProductID INT PRIMARY KEY,
+ProductName NVARCHAR(50) NOT NULL,
+ProductName NVARCHAR(50) NOT NULL,
 StandardCost FLOAT NOT NULL,
 ListPrice FLOAT NOT NULL,
-ProductCategory NVARCHAR(2048),
+ProductCategory NVARCHAR(50),
 ModifiedDate DATETIME NOT NULL
 );
 
-CREATE TABLE STAGE.BillDetail(
+
+CREATE OR REPLACE TABLE STAGE.BillDetail(
 BillDetailID INT PRIMARY KEY,
 BillHeaderID INT NOT NULL,
 OrderDate DATETIME NOT NULL,
@@ -40,54 +43,65 @@ ProductID INT NOT NULL,
 OrderQty INT NOT NULL,
 UnitPrice FLOAT NOT NULL,
 LineProfit FLOAT NOT NULL,
+uuid NVARCHAR(50) NOT NULL,
 ModifiedDate DATETIME NOT NULL
 );
 
-CREATE TABLE NDS.Customer(
-CustomerID INT IDENTITY(1,1) PRIMARY KEY,
-FirstName NVARCHAR(2048) NOT NULL,
-LastName NVARCHAR(2048) NOT NULL,
-DateOfBirth DATETIME,
-Gender NCHAR(64),
-ModifiedDate DATETIME NOT NULL
+CREATE TABLE utils.etldate(
+ETLDATEID INT PRIMARY KEY,
+LSET DATETIME,
+CET DATETIME
 );
+insert into utils.etldate VALUES(1,'1/1/1975',CURRENT_TIMESTAMP());
+
+CREATE OR REPLACE TABLE UTILS.error_log (error_code number, error_state string, error_message string, stack_trace string);
 
 CREATE TABLE NDS.Territory(
-TerritoryID INT IDENTITY(1,1) PRIMARY KEY,
-Territory NVARCHAR(2048) NOT NULL,
+TerritoryID INT PRIMARY KEY,
+Territory NVARCHAR(50) NOT NULL,
 ModifiedDate DATETIME NOT NULL
 );
 
 CREATE TABLE NDS.State(
-StateID INT IDENTITY(1,1) PRIMARY KEY,
-State NVARCHAR(2048) NOT NULL,
+StateID INT PRIMARY KEY,
+State NVARCHAR(50) NOT NULL,
 TerritoryID INT NOT NULL,
 ModifiedDate DATETIME NOT NULL,
 FOREIGN KEY (TerritoryID) REFERENCES NDS.Territory(TerritoryID)
 );
 
 CREATE OR REPLACE TABLE NDS.Address(
-AddressID INT IDENTITY(1,1) PRIMARY KEY,
-CustomerID INT NOT NULL,
-Address NVARCHAR(2048) NOT NULL,
-City NVARCHAR(2048) NOT NULL,
+AddressID INT PRIMARY KEY,
+Address NVARCHAR(50) NOT NULL,
+City NVARCHAR(50) NOT NULL,
 StateID INT NOT NULL,
 ModifiedDate DATETIME NOT NULL,
-FOREIGN KEY (CustomerID) REFERENCES NDS.Customer(CustomerID),
 FOREIGN KEY (StateID) REFERENCES NDS.State(StateID)
 );
 
 
+CREATE TABLE NDS.Customer(
+CustomerID INT PRIMARY KEY,
+Account NVARCHAR(50) NOT NULL,
+FirstName NVARCHAR(50) NOT NULL,
+LastName NVARCHAR(50) NOT NULL,
+DateOfBirth DATETIME NOT NULL,
+Gender NCHAR(10),
+AddressID INT NOT NULL,
+ModifiedDate DATETIME NOT NULL,
+FOREIGN KEY (AddressID) REFERENCES NDS.Address(AddressID)
+);
+
 CREATE TABLE NDS.ProductCategory(
-ProductCategoryID INT IDENTITY(1,1) PRIMARY KEY,
-Name NVARCHAR(2048) NOT NULL,
+ProductCategoryID INT PRIMARY KEY,
+Name NVARCHAR(50) NOT NULL,
 ModifiedDate DATETIME NOT NULL
 );
 
 CREATE TABLE NDS.Product(
-ProductID INT IDENTITY(1,1) PRIMARY KEY,
-ProductName NVARCHAR(2048) NOT NULL,
-ProductNumber NCHAR(64) NOT NULL,
+ProductID INT PRIMARY KEY,
+ProductNumber NVARCHAR(50) NOT NULL,
+ProductName NVARCHAR(50) NOT NULL,
 StandardCost FLOAT NOT NULL,
 ListPrice FLOAT NOT NULL,
 ProductCategoryID INT NOT NULL,
@@ -96,15 +110,17 @@ FOREIGN KEY (ProductCategoryID) REFERENCES NDS.ProductCategory(ProductCategoryID
 );
 
 CREATE TABLE NDS.BillHeader(
-BillHeaderID INT IDENTITY(1,1) PRIMARY KEY,
+BillHeaderID INT PRIMARY KEY,
+Date DATETIME NOT NULL,
 CustomerID INT NOT NULL,
 SubTotal FLOAT,
+uuid NVARCHAR(50) NOT NULL,
 ModifiedDate DATETIME NOT NULL,
 FOREIGN KEY (CustomerID) REFERENCES NDS.Customer(CustomerID)
 );
 
 CREATE TABLE NDS.BillDetail(
-BillDetailID INT IDENTITY(1,1) PRIMARY KEY,
+BillDetailID INT PRIMARY KEY,
 BillHeaderID INT NOT NULL,
 OrderQty INT NOT NULL,
 ProductID INT NOT NULL,
@@ -120,21 +136,29 @@ USE SCHEMA DDS;
 CREATE OR REPLACE TABLE DDS.DimCustomer
 (CustomerKey INTEGER IDENTITY(1,1) PRIMARY KEY,
  SourceCustomerID INTEGER NOT NULL,
- Name VARCHAR(2048) NOT NULL,
+ Name NVARCHAR(100) NOT NULL,
  DateOfBirth DATE,
- Gender VARCHAR(64));
+ Gender VARCHAR(10),
+ Address NVARCHAR(50),
+ ModifiedDate DATETIME NOT NULL);
   
 CREATE OR REPLACE TABLE DDS.DimLocation
 (LocationKey INTEGER IDENTITY(1,1) PRIMARY KEY,
  SourceStateID INTEGER NOT NULL,
- State VARCHAR(2048) NOT NULL,
- Territory VARCHAR(2048) NOT NULL);
+ State NVARCHAR(50) NOT NULL,
+ Territory NVARCHAR(50) NOT NULL,
+ ModifiedDate DATETIME NOT NULL);
   
 CREATE OR REPLACE TABLE DDS.DimProduct
 (ProductKey INTEGER IDENTITY(1,1) PRIMARY KEY,
  SourceProductID INTEGER NOT NULL,
- ProductName VARCHAR(2048) NOT NULL,
- Category VARCHAR(2048) NOT NULL);
+ ProductNumber NVARCHAR(50) NOT NULL,
+ ProductName NVARCHAR(50) NOT NULL,
+ Category NVARCHAR(50) NOT NULL,
+ StandardCost FLOAT NOT NULL,
+ ListPrice FLOAT NOT NULL,
+ ValidFrom DATETIME NOT NULL,
+ ValidTo DATETIME);
  
 CREATE OR REPLACE TABLE DDS.DimCalendar
 (Date DATE PRIMARY KEY, 
@@ -151,7 +175,8 @@ AS
   SELECT Date, YEAR(Date), MONTH(Date), DAY(Date), DAYOFWEEK(Date), WEEKOFYEAR(Date) FROM CTE_DATE;
 
 CREATE OR REPLACE TABLE DDS.FactSales
-(BillDetailID INTEGER PRIMARY KEY,
+(BillDetailKey INTEGER IDENTITY(1,1) PRIMARY KEY,
+ BillDetailID INTEGER NOT NULL UNIQUE,
  Date DATE NOT NULL,
  CustomerKey INTEGER NOT NULL,
  LocationKey INTEGER NOT NULL,
@@ -159,12 +184,708 @@ CREATE OR REPLACE TABLE DDS.FactSales
  Volume INTEGER NOT NULL,
  Revenue FLOAT NOT NULL,
  Profit FLOAT NOT NULL,
+ ModifiedDate DATE NOT NULL,
 FOREIGN KEY (ProductKey) REFERENCES DDS.DimProduct(ProductKey),
 FOREIGN KEY (Date) REFERENCES DDS.DimCalendar(Date),
 FOREIGN KEY (CustomerKey) REFERENCES DDS.DimCustomer(CustomerKey),
 FOREIGN KEY (LocationKey) REFERENCES DDS.DimLocation(LocationKey));
 
+--CREATE PROCEDURE
+---Update CET in etldate table everytime etl begins
+create or replace procedure update_CET()
+returns string
+language javascript
+as
+$$
+    try {
+    var sql_command=`update utils.etldate t set t.CET=current_timestamp where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`
+    var statement1 = snowflake.createStatement( {sqlText: sql_command});
+    var result_set1 = statement1.execute();
+    result_set1.next();
+    result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
+$$;
+---Add SLET in etldate table everytime etl ends
+create or replace procedure add_lset()
+returns string
+language javascript
+as
+$$
+    var sql_command =`select t.etldateid,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) maxid from utils.etldate t1)`;
+    var statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    var result_set1 = statement1.execute();
+    result_set1.next();
+    if (result_set1.getColumnValue(1)===null)
+    {
+    maxid=0;
+    CET=Date.now();
+    }
+    else
+    {
+    maxid=result_set1.getColumnValue(1);
+    CET=result_set1.getColumnValue(2);
+    }
+     try {
+    sqlcommand=`insert into utils.etldate(etldateid,lset) values(:1 +1,:2)`
+    statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,cet]});
+    result_set1 = statement1.execute();
+    result_set1.next();
+    result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
+$$;
+
+---insert data into nds.territory
+create or replace procedure data_into_nds_territory()
+returns string
+language javascript
+as
+$$ 
+    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
+    var statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    var result_set1 = statement1.execute();
+    result_set1.next();
+    var LSET=result_set1.getColumnValue(1);
+    var CET=result_set1.getColumnValue(2);
+    sql_command =` select max(t.territoryid) maxid from nds.territory t`;
+    statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    if (result_set1.getColumnValue(1)===null)
+    {
+    maxid=0;
+    }
+    else
+    {
+    maxid=result_set1.getColumnValue(1);
+    }
+    try {
+    sql_command= `insert into nds.territory select row_number() over (ORDER BY 1) + :1 rn,c1.territory,CURRENT_TIMESTAMP() from 
+    (select distinct(c.territory) territory from stage.customer c where c.modifieddate>= :2 and c.modifieddate < :3 ) c1 
+    where c1.territory not in (select nt.territory from nds.territory nt)`
+    statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]});
+    result_set1 = statement1.execute();
+    result_set1.next();
+    result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
+$$;
+---insert data into nds.state
+create or replace procedure data_into_nds_state()
+returns string
+language javascript
+as
+$$ 
+    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
+    var statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    var result_set1 = statement1.execute();
+    result_set1.next();
+    var LSET=result_set1.getColumnValue(1);
+    var CET=result_set1.getColumnValue(2);
+    sql_command =` select max(t.stateid) maxid from nds.state t`;
+    statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    if (result_set1.getColumnValue(1)===null)
+    {
+    maxid=0;
+    }
+    else
+    {
+    maxid=result_set1.getColumnValue(1);
+    }
+    try {
+    sql_command= `insert into nds.state select row_number() over (ORDER BY 1)+ :1 rn,t.state,t.territoryid,CURRENT_TIMESTAMP() from
+    (select c1.state,nt.territoryid 
+    from (select distinct c.state,c.territory 
+            from stage.customer c where c.modifieddate>= :2 and c.modifieddate < :3 ) c1 inner join nds.territory nt on nt.territory = c1.territory) t
+    where (t.state,t.territoryid) not in (select ns.state,ns.territoryid from nds.state ns)`
+    statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
+$$;
+---insert data into nds.productcategory
+create or replace procedure data_into_nds_productcategory()
+returns string
+language javascript
+as
+$$ 
+    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
+    var statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    var result_set1 = statement1.execute();
+    result_set1.next();
+    var LSET=result_set1.getColumnValue(1);
+    var CET=result_set1.getColumnValue(2);
+    sql_command =` select max(t.productcategoryid) maxid from nds.productcategory t`;
+    statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    if (result_set1.getColumnValue(1)===null)
+    {
+    maxid=0;
+    }
+    else
+    {
+    maxid=result_set1.getColumnValue(1);
+    }
+    try {
+    sql_command= `insert into nds.productcategory select row_number() over (ORDER BY 1)+ :1 rn,sp1.productcategory,CURRENT_TIMESTAMP() from
+    (select distinct(sp.productcategory) from stage.product sp where sp.modifieddate>= :2 and sp.modifieddate < :3 ) sp1
+    where sp1.productcategory not in(select np.name from nds.productcategory np)`
+    statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]} );
+    result_set1 = statement1.execute();
+    result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
+$$;
+---insert data into nds.product
+create or replace procedure data_into_nds_product()
+returns string
+language javascript
+as
+$$ 
+    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
+    var statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    var result_set1 = statement1.execute();
+    result_set1.next();
+    var LSET=result_set1.getColumnValue(1);
+    var CET=result_set1.getColumnValue(2);
+    sql_command =` select max(t.productid) maxid from nds.product t`;
+    statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    if (result_set1.getColumnValue(1)===null)
+    {
+    maxid=0;
+    }
+    else
+    {
+    maxid=result_set1.getColumnValue(1);
+    }
+    try {
+    sql_command=`update nds.product
+        set productname=t.productname,standardcost=t.standardcost,listprice=t.listprice,productcategoryid=t.productcategoryid,modifieddate=CURRENT_TIMESTAMP()
+        from (select sp1.productname,sp1.productnumber,sp1.standardcost,sp1.listprice,np1.productcategoryid from
+                (select sp.productname,sp.productnumber,sp.standardcost,sp.listprice,sp.productcategory from stage.product sp where sp.modifieddate>= :1 and sp.modifieddate < :2) sp1 
+                    inner join (select np.productcategoryid,np.name from nds.productcategory np) np1 on np1.name=sp1.productcategory) t
+          where nds.product.productnumber=t.productnumber`
+    var statement2 = snowflake.createStatement( {sqlText: sql_command,binds:[LSET,CET]} );
+    var result_set2 = statement2.execute();
+    result_set2.next();
+    sql_command= `insert into nds.product select row_number() over (ORDER BY 1)+ :1 rn,t.productname,t.productnumber,t.standardcost,t.listprice,t.productcategoryid,CURRENT_TIMESTAMP() from 
+    (select sp1.productname,sp1.productnumber,sp1.standardcost,sp1.listprice,np1.productcategoryid from
+        (select sp.productname,sp.productnumber,sp.standardcost,sp.listprice,sp.productcategory from stage.product sp where sp.modifieddate>= :2 and sp.modifieddate < :3) sp1 
+            inner join (select np.productcategoryid,np.name from nds.productcategory np) np1 on np1.name=sp1.productcategory) t
+    where t.productnumber not in(select np2.productnumber from nds.product np2)`
+    statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    result = "Number of rows affected: " + (+result_set1.getColumnValue(1))+ +result_set2.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
+$$;
+
+---insert data into nds.address
+create or replace procedure data_into_nds_address()
+returns string
+language javascript
+as
+$$ 
+    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
+    var statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    var result_set1 = statement1.execute();
+    result_set1.next();
+    var LSET=result_set1.getColumnValue(1);
+    var CET=result_set1.getColumnValue(2);
+    sql_command =` select max(t.addressid) maxid from nds.address t`;
+    statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    if (result_set1.getColumnValue(1)===null)
+    {
+    maxid=0;
+    }
+    else
+    {
+    maxid=result_set1.getColumnValue(1);
+    }
+    try {
+    sql_command= `insert into nds.address select st1.rn + :1,st1.address,st1.city,ns2.stateid,current_timestamp() from 
+    (select st.address,st.city,st.state,st.territory,row_number() over (order by 1) rn from stage.customer st where st.modifieddate>=:2 and  st.modifieddate < :3) st1
+    inner join (select ns1.stateid,ns1.state,nt1.territory from 
+                    (select ns.stateid,ns.state,ns.territoryid from nds.state ns) ns1 inner join 
+                      (select nt.territoryid,nt.territory from nds.territory nt) nt1 on ns1.territoryid=nt1.territoryid) ns2 on ns2.state= st1.state and ns2.territory=st1.territory`
+    statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
+$$;
+
+---insert data into nds.customer
+create or replace procedure data_into_nds_customer()
+returns string
+language javascript
+as
+$$ 
+    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
+    var statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    var result_set1 = statement1.execute();
+    result_set1.next();
+    var LSET=result_set1.getColumnValue(1);
+    var CET=result_set1.getColumnValue(2);
+    sql_command =` select max(t.customerid) maxid from nds.customer t`;
+    statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    if (result_set1.getColumnValue(1)===null)
+    {
+    maxid=0;
+    }
+    else
+    {
+    maxid=result_set1.getColumnValue(1);
+    }
+    try {
+    sql_command= `merge into nds.customer 
+    using (select row_number() over (order by 1) rn,sc.ACCOUNT,sc.FIRSTNAME,sc.LASTNAME,sc.DATEOFBIRTH,sc.GENDER,ns2.addressid,current_timestamp() from stage.customer sc
+           inner join (select na1.addressid,na1.address,ns1.state,nt1.territory from 
+                    (select na.addressid,na.address,na.city,na.stateid from nds.address na) na1 inner join
+                    (select ns.stateid,ns.state,ns.territoryid from nds.state ns) ns1 on na1.stateid=ns1.stateid inner join 
+                      (select nt.territoryid,nt.territory from nds.territory nt) nt1 on ns1.territoryid=nt1.territoryid) ns2
+            on ns2.address=sc.address and ns2.address=sc.address and ns2.state=sc.state and ns2.territory=sc.territory) t
+    on t.account=nds.customer.account
+    when matched then
+        update set FIRSTNAME=t.FIRSTNAME,LASTNAME=t.LASTNAME,DATEOFBIRTH=t.DATEOFBIRTH,GENDER=t.GENDER,addressid=t.addressid,MODIFIEDDATE=current_timestamp()
+    when not matched then
+        insert (customerid,ACCOUNT,FIRSTNAME,LASTNAME,DATEOFBIRTH,GENDER,addressid,modifieddate) values (t.rn+:3,t.ACCOUNT,t.FIRSTNAME,t.LASTNAME,t.DATEOFBIRTH,t.GENDER,t.addressid,current_timestamp())`
+    statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[LSET,CET,maxid]} );
+    result_set1 = statement1.execute();
+    result_set1.next();result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
+$$;
+---insert data into nds.billheader
+create or replace procedure data_into_nds_billheader()
+returns string
+language javascript
+as
+$$ 
+    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
+    var statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    var result_set1 = statement1.execute();
+    result_set1.next();
+    var LSET=result_set1.getColumnValue(1);
+    var CET=result_set1.getColumnValue(2);
+    sql_command =` select max(t.billheaderid) maxid from nds.billheader t`;
+    statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    if (result_set1.getColumnValue(1)===null)
+    {
+    maxid=0;
+    }
+    else
+    {
+    maxid=result_set1.getColumnValue(1);
+    }
+    try {
+    sql_command= `insert into nds.billheader select row_number() over(order by 1) + :1 rn,sb1.orderdate,nc1.CUSTOMERID,sb1.SUBTOTAL ,sb1.UUID,current_timestamp()
+    from (select sb.BILLHEADERID,sb.UUID,sb.CUSTOMERID,sum(sb.ORDERQTY*sb.UNITPRICE) SUBTOTAL,sb.orderdate
+            from stage.billdetail sb 
+            where sb.modifieddate>=:2 and  sb.modifieddate < :3
+            group by sb.billheaderid,sb.CUSTOMERID,sb.UUID,sb.orderdate) sb1
+    inner join (select sc.customerid,sc.account from stage.customer sc) sc1 on sc1.customerid=sb1.customerid
+    inner join (select nc.account,nc.customerid from nds.customer nc ) nc1 on sc1.account=nc1.account`
+    statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
+$$;
+
+---insert data into nds.detail
+create or replace procedure data_into_nds_detail()
+returns string
+language javascript
+as
+$$ 
+    var sql_command =`select t.LSET,t.CET from utils.etldate t where t.etldateid=(select max(t1.etldateid) from utils.etldate t1)`;
+    var statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    var result_set1 = statement1.execute();
+    result_set1.next();
+    var LSET=result_set1.getColumnValue(1);
+    var CET=result_set1.getColumnValue(2);
+    sql_command =` select max(t.billdetailid) maxid from nds.billdetail t`;
+    statement1 = snowflake.createStatement( {sqlText: sql_command} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    if (result_set1.getColumnValue(1)===null)
+    {
+    maxid=0;
+    }
+    else
+    {
+    maxid=result_set1.getColumnValue(1);
+    }
+    try {
+    sql_command= `insert into nds.billdetail select row_number() over (order by 1) +:1 rn,nb1.BILLHEADERID,sb1.ORDERQTY,np1.productid,sb1.UNITPRICE,sb1.LINEPROFIT,current_timestamp()
+    from (select sb.ORDERQTY,sb.PRODUCTID,sb.UNITPRICE,sb.LINEPROFIT,sb.uuid 
+            from stage.billdetail sb 
+            where sb.modifieddate>=:2 and  sb.modifieddate < :3 )sb1
+    inner join (select nb.uuid,nb.billheaderid from nds.billheader nb) nb1 on nb1.uuid=sb1.uuid
+    inner join (select sp.productid,sp.productnumber from stage.product sp) sp1 on sb1.productid=sp1.productid
+    inner join (select np.productid,np.productnumber from nds.product np) np1 on np1.productnumber=sp1.productnumber`
+    statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]} );
+    result_set1 = statement1.execute();
+    result_set1.next();
+    result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+        
+    }
+    return(result);
+$$;
+
+-- insert data to DDS.Product
+CREATE OR REPLACE PROCEDURE procProduct()
+  RETURNS string
+  LANGUAGE javascript
+  AS
+  $$
+  var result;
+  var sql_command1 =
+  "CREATE OR REPLACE TEMPORARY TABLE StageDimProduct\
+  (ProductID int,\
+   ProductNumber NVARCHAR(50),\
+   ProductName NVARCHAR(50),\
+   Category NVARCHAR(50),\
+   StandardCost FLOAT,\
+   ListPrice FLOAT,\
+   ModifiedDate DATETIME);";
+   
+  var sql_command2 =
+  "INSERT INTO StageDimProduct(ProductID, ProductNumber, ProductName, Category, StandardCost, ListPrice, ModifiedDate)\
+    SELECT p.ProductID, p.ProductNumber, p.ProductName, c.Name, p.StandardCost, p.ListPrice, p.ModifiedDate\
+    FROM PROJECT1.NDS.Product p\
+    JOIN PROJECT1.NDS.ProductCategory c\
+    ON p.ProductCategoryID = c.ProductCategoryID\
+    WHERE p.ModifiedDate > (SELECT MAX(LSET) FROM PROJECT1.UTILS.ETLDATE);";
+    
+  var sql_command3 =
+  "MERGE INTO PROJECT1.DDS.DimProduct t\
+    USING StageDimProduct s\
+    ON t.SourceProductID = s.ProductID\
+    WHEN matched THEN\
+        UPDATE SET t.ValidTo = s.ModifiedDate\
+    WHEN NOT matched THEN\
+        INSERT (SourceProductID, ProductNumber, ProductName, Category, StandardCost, ListPrice, ValidFrom)\
+        VALUES (s.ProductID, s.ProductName, s.ProductName, s.Category, s.StandardCost , s.ListPrice, s.ModifiedDate);";
+  
+  try {
+        snowflake.execute ({sqlText: sql_command1});
+        snowflake.execute ({sqlText: sql_command2});
+        snowflake.execute ({sqlText: sql_command3}); 
+        result = "Succeeded";
+        }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into UTILS.Error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+
+  }
+  return result;
+  $$;
+
+-- insert data to DDS.Location
+CREATE OR REPLACE PROCEDURE procLocation()
+  RETURNS string
+  LANGUAGE javascript
+  AS
+  $$
+  var result;
+  var sql_command1 =
+  "CREATE OR REPLACE TEMPORARY TABLE StageDimLocation\
+  (StateID int,\
+   State NVARCHAR(50),\
+   Territory NVARCHAR(50),\
+   ModifiedDate DATETIME);";
+  
+  var sql_command2 =
+  "INSERT INTO StageDimLocation(StateID, State, Territory, ModifiedDate)\
+    SELECT s.StateID, s.State, d.Territory, s.ModifiedDate\
+    FROM PROJECT1.NDS.State s\
+    JOIN PROJECT1.NDS.Territory d\
+    ON s.TerritoryID = d.TerritoryID\
+    WHERE s.ModifiedDate > (SELECT MAX(LSET) FROM PROJECT1.UTILS.ETLDATE);";
+    
+  var sql_command3 =
+  "MERGE INTO PROJECT1.DDS.DimLocation t\
+    USING StageDimLocation s\
+    ON t.SourceStateID = s.StateID\
+    WHEN matched THEN\
+        UPDATE SET t.State = s.State, t.Territory = s.Territory, t.ModifiedDate = s.ModifiedDate\
+    WHEN NOT matched THEN\
+       INSERT (SourceStateID, State, Territory, ModifiedDate)\
+      VALUES (s.StateID, s.State, s.Territory, s.ModifiedDate);";
+  
+  try {
+        snowflake.execute ({sqlText: sql_command1});
+        snowflake.execute ({sqlText: sql_command2});
+        snowflake.execute ({sqlText: sql_command3}); 
+        result = "Succeeded";
+        }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+
+  }
+  return result;
+  $$;
+  
+-- insert data to DDS.Customer  
+CREATE OR REPLACE PROCEDURE procCustomer()
+  RETURNS string
+  LANGUAGE javascript
+  AS
+  $$
+  var result;
+  var sql_command1 = 
+  "CREATE OR REPLACE TEMPORARY TABLE StageDimCustomer\
+  (CustomerID int,\
+   Name NVARCHAR(50),\
+   DateOfBirth DATE,\
+   Gender VARCHAR(10),\
+   Address NVARCHAR(50),\
+   ModifiedDate DATETIME);";
+   
+  var sql_command2 =
+  "INSERT INTO StageDimCustomer(CustomerID, Name, DateOfBirth, Gender, Address, ModifiedDate)\
+    SELECT c. CustomerID, c.FirstName || ' ' || c.LastName, c.DateOfBirth, c.Gender, a.Address, c.ModifiedDate\
+    FROM PROJECT1.NDS.Customer c\
+    LEFT JOIN PROJECT1.NDS.Address a\
+    ON c.AddressID = a.AddressID\
+    WHERE c.ModifiedDate > (SELECT MAX(LSET) FROM PROJECT1.UTILS.ETLDATE);";
+    
+  var sql_command3 =
+  "MERGE INTO PROJECT1.DDS.DimCustomer t\
+    USING StageDimCustomer s\
+    ON t.SourceCustomerID = s.CustomerID\
+    WHEN matched THEN\
+        UPDATE SET t.Name = s.Name, t.DateOfBirth = s.DateOfBirth, t.Gender = s.Gender, t.Address = s.Address, t.ModifiedDate = s.ModifiedDate\
+    WHEN NOT matched THEN\
+        INSERT (SourceCustomerID, Name, DateOfBirth, Gender, Address, ModifiedDate)\
+        VALUES (s.CustomerID, s.Name, s.DateOfBirth, s.Gender, s.Address, s.ModifiedDate);";
+  
+  try {
+        snowflake.execute ({sqlText: sql_command1});
+        snowflake.execute ({sqlText: sql_command2});
+        snowflake.execute ({sqlText: sql_command3});        
+        result = "Succeeded";
+        }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+
+  }
+  return result;
+  $$;  
+  
+-- insert data to DDS.FactSales
+CREATE OR REPLACE PROCEDURE procFactSales()
+  RETURNS string
+  LANGUAGE javascript
+  AS
+  $$
+  var result;
+  var sql_command1 = 
+  "CREATE OR REPLACE TEMPORARY TABLE StageFactSales\
+  (BillDetailID INT,\
+   Date DATE,\
+   CustomerKey INT,\
+   LocationKey INT,\
+   ProductKey INT,\
+   Volume INT,\
+   Revenue FLOAT,\
+   Profit FLOAT,\
+   ModifiedDate DATETIME);";
+  
+  var sql_command2 =
+  "INSERT INTO StageFactSales(BillDetailID, Date, CustomerKey, LocationKey, ProductKey, Volume, Revenue, Profit, ModifiedDate)\
+    SELECT d.BillDetailID, h.Date, c.CustomerKey, l.LocationKey, p.ProductKey, d.OrderQty, d.UnitPrice*d.OrderQty, d.LineProfit, d.ModifiedDate\
+    FROM PROJECT1.NDS.BillDetail d\
+    JOIN PROJECT1.NDS.BillHeader h\
+    ON d.BillHeaderID = h.BillHeaderID\
+    JOIN PROJECT1.DDS.DimCustomer c\
+    ON h.CustomerID = c.SourceCustomerID\
+    JOIN PROJECT1.NDS.Address a\
+    ON c.Address = a.Address\
+    JOIN PROJECT1.DDS.DimLocation l\
+    ON a.StateID = l.SourceStateID\
+    JOIN PROJECT1.DDS.DimProduct p\
+    ON d.ProductID = p.SourceProductID\
+    WHERE d.ModifiedDate > (SELECT MAX(LSET) FROM PROJECT1.UTILS.ETLDATE);";
+    
+  var sql_command3 =
+  "MERGE INTO PROJECT1.DDS.FactSales t\
+    USING StageFactSales s\
+    ON t.BillDetailID = s.BillDetailID\
+    WHEN matched THEN\
+        UPDATE SET t.Volume = s.Volume, t.Revenue = s.Revenue, t.Profit = s.Profit\
+    WHEN NOT matched THEN\
+        INSERT (BillDetailID, Date, CustomerKey, LocationKey, ProductKey, Volume, Revenue, Profit, ModifiedDate)\
+        VALUES (s.BillDetailID, s.Date, s.CustomerKey, s.LocationKey, s.ProductKey, s.Volume, s.Revenue, s.Profit, s.ModifiedDate);";
+  
+  try {
+        snowflake.execute ({sqlText: sql_command1});
+        snowflake.execute ({sqlText: sql_command2});
+        snowflake.execute ({sqlText: sql_command3});        
+        result = "Succeeded";
+        }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+
+  }
+  return result;
+  $$;
+
+-- Cleanup Stage Table
+CREATE OR REPLACE PROCEDURE procCleanup()
+  RETURNS string
+  LANGUAGE javascript
+  AS
+  $$
+  var result;
+  var sql_command1 = "TRUNCATE TABLE PROJECT1.STAGE.BillDetail;";
+  var sql_command2 = "TRUNCATE TABLE PROJECT1.STAGE.Product;";
+  var sql_command3 = "TRUNCATE TABLE PROJECT1.STAGE.Customer;";  
+  
+  try {
+        snowflake.execute ({sqlText: sql_command1});
+        snowflake.execute ({sqlText: sql_command2});
+        snowflake.execute ({sqlText: sql_command3});
+        result = "Succeeded";
+        }
+    catch (err)  {
+        result = "Failed";
+        snowflake.execute({
+        sqlText: `insert into error_log VALUES (?,?,?,?)`
+        ,binds: [err.code, err.state, err.message, err.stackTraceTxt]});
+
+  }
+  return result;
+  $$;
+
 -- Create file format
 CREATE OR REPLACE FILE FORMAT PROJECT1.STAGE.CSV_FILE TYPE = 'CSV' COMPRESSION = 'AUTO' FIELD_DELIMITER = ',' RECORD_DELIMITER = '\n'
 SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = 'NONE' TRIM_SPACE = FALSE ERROR_ON_COLUMN_COUNT_MISMATCH = TRUE ESCAPE = 'NONE' 
 ESCAPE_UNENCLOSED_FIELD = '\134' DATE_FORMAT = 'AUTO' TIMESTAMP_FORMAT = 'AUTO' NULL_IF = ('\\N');
+
+-- Create Task
+
+-- Create Trainer account
+USE ROLE ACCOUNTADMIN;
+CREATE OR REPLACE USER longbv1 password='abc123' default_role = trainer;
+CREATE OR REPLACE USER mainq2 password='abc123' default_role = trainer;
+
+CREATE OR REPLACE ROLE trainer;
+GRANT ROLE trainer TO ROLE sysadmin;
+
+GRANT ROLE trainer TO USER longbv1;
+GRANT ROLE trainer TO USER mainq2;
+
+GRANT USAGE, MONITOR ON DATABASE PROJECT1 TO ROLE trainer;
+GRANT USAGE, MONITOR ON SCHEMA PROJECT1.STAGE TO ROLE trainer;
+GRANT USAGE, MONITOR ON SCHEMA PROJECT1.DDS TO ROLE trainer;
+GRANT USAGE, MONITOR ON SCHEMA PROJECT1.NDS TO ROLE trainer;
+GRANT USAGE, MONITOR ON SCHEMA PROJECT1.UTILS TO ROLE trainer;
+
+GRANT SELECT ON ALL TABLES IN SCHEMA PROJECT1.STAGE TO ROLE trainer;
+GRANT SELECT ON ALL TABLES IN SCHEMA PROJECT1.DDS TO ROLE trainer;
+GRANT SELECT ON ALL TABLES IN SCHEMA PROJECT1.NDS TO ROLE trainer;
+GRANT SELECT ON ALL TABLES IN SCHEMA PROJECT1.UTILS TO ROLE trainer;
+
+GRANT MONITOR, OPERATE, USAGE ON WAREHOUSE PROJECT1_WH TO ROLE trainer;
+
+GRANT MONITOR ON ALL TASKS IN DATABASE PROJECT1 TO ROLE trainer;
