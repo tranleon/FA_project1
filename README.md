@@ -40,5 +40,6 @@ Building the data pipeline
 10. Connect to Snowflake server using your snowflake account.
 
 ## Snowflake trainer account
+[Snowflake link](https://pv02258.ap-southeast-1.snowflakecomputing.com/)
 1. User: `longbv1`               Password: `abc123`
 2. User: `mainq2`                Password: `abc123`
