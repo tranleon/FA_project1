@@ -130,7 +130,7 @@ AS
 		[UnitPrice] = [dbo].[ufnGetProductListPrice]([ProductID], [OrderDate]),
 		[LineProfit] = [dbo].[ufnGetProductProfit]([ProductID], [OrderDate])*[OrderQty]
 		WHERE [UnitPrice] IS NULL
-
+go
 -- Set up SMTP
 sp_configure 'show advanced options', 1;
 GO
