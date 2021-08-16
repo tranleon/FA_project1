@@ -863,7 +863,19 @@ SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = 'NONE' TRIM_SPACE = FALSE ERROR_O
 ESCAPE_UNENCLOSED_FIELD = '\134' DATE_FORMAT = 'AUTO' TIMESTAMP_FORMAT = 'AUTO' NULL_IF = ('\\N');
 
 -- Create Task
-
+create or replace task data_into_nds
+warehouse = Project1_wh
+schedule= 'Using cron 0 0 17 8 * Asia/Ho_Chi_Minh'
+as 
+	call update_CET();
+	call data_into_nds_territory();
+	call data_into_nds_state();
+	call data_into_nds_productcategory();
+	call data_into_nds_product();
+	call data_into_nds_address();
+	call data_into_nds_customer();
+	call data_into_nds_billheader();
+	call data_into_nds_detail();	
 -- Create Trainer account
 USE ROLE ACCOUNTADMIN;
 CREATE OR REPLACE USER longbv1 password='abc123' default_role = trainer;
