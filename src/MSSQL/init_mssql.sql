@@ -131,6 +131,8 @@ AS
 		[LineProfit] = [dbo].[ufnGetProductProfit]([ProductID], [OrderDate])*[OrderQty]
 		WHERE [UnitPrice] IS NULL
 go
+USE msdb
+GO
 -- Set up SMTP
 sp_configure 'show advanced options', 1;
 GO
@@ -139,8 +141,6 @@ GO
 sp_configure 'Database Mail XPs', 1;
 GO
 RECONFIGURE
-GO
-USE msdb
 GO	
 -- Create a Database Mail profile
 EXECUTE msdb.dbo.sysmail_add_profile_sp  
@@ -287,7 +287,7 @@ EXEC msdb.dbo.sp_add_jobstep @job_name=N'Unload', @step_name=N'Unload',
 		@proxy_name = N'runcmd';
 GO
 -- Add job server
-EXEC msdb.dbo.sp_add_jobserver @job_name=N'Upload', @server_name = @@ServerName
+EXEC msdb.dbo.sp_add_jobserver @job_name=N'Unload', @server_name = @@ServerName
 GO
 USE [msdb]
 GO
@@ -306,7 +306,7 @@ GO
 EXEC sp_add_schedule @schedule_name = N'Unload', 
 		@freq_type = 4, 
 		@freq_interval = 1, 
-		@active_start_time = 000500;
+		@active_start_time = 070000;
 
 -- Add job to schedule
 GO
