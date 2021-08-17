@@ -657,17 +657,20 @@ CREATE OR REPLACE PROCEDURE procProduct()
   var sql_command3 =
   "MERGE INTO PROJECT1.DDS.DimProduct t\
     USING StageDimProduct s\
-    ON t.SourceProductID = s.ProductID\
+    ON t.SourceProductID = s.ProductID AND t.ValidTo IS NULL\
     WHEN matched THEN\
-        UPDATE SET t.ValidTo = s.ModifiedDate\
-    WHEN NOT matched THEN\
-        INSERT (SourceProductID, ProductNumber, ProductName, Category, StandardCost, ListPrice, ValidFrom)\
-        VALUES (s.ProductID, s.ProductName, s.ProductName, s.Category, s.StandardCost , s.ListPrice, s.ModifiedDate);";
+        UPDATE SET t.ValidTo = s.ModifiedDate\;";
+
+  var sql_command4 =
+  "INSERT INTO PROJECT1.DDS.DimProduct (SourceProductID, ProductNumber, ProductName, Category, StandardCost, ListPrice, ValidFrom)\
+    SELECT s.ProductID, s.ProductName, s.ProductName, s.Category, s.StandardCost , s.ListPrice, s.ModifiedDate\
+    FROM StageDimProduct s;";
   
   try {
         snowflake.execute ({sqlText: sql_command1});
         snowflake.execute ({sqlText: sql_command2});
-        snowflake.execute ({sqlText: sql_command3}); 
+        snowflake.execute ({sqlText: sql_command3});
+	snowflake.execute ({sqlText: sql_command4})
         result = "Succeeded";
         }
     catch (err)  {
