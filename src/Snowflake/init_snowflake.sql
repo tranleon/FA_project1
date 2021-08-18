@@ -64,13 +64,13 @@ insert into utils.etldate VALUES(1,'1/1/1975',CURRENT_TIMESTAMP());
 
 CREATE OR REPLACE TABLE UTILS.error_log (error_code number, error_state string, error_message string, stack_trace string);
 
-CREATE TABLE NDS.Territory(
+CREATE OR REPLACE TABLE NDS.Territory(
 TerritoryID INT PRIMARY KEY,
 Territory NVARCHAR(50) NOT NULL,
 ModifiedDate DATETIME NOT NULL
 );
 
-CREATE TABLE NDS.State(
+CREATE OR REPLACE TABLE NDS.State(
 StateID INT PRIMARY KEY,
 State NVARCHAR(50) NOT NULL,
 TerritoryID INT NOT NULL,
@@ -88,7 +88,7 @@ FOREIGN KEY (StateID) REFERENCES NDS.State(StateID)
 );
 
 
-CREATE TABLE NDS.Customer(
+CREATE OR REPLACE TABLE NDS.Customer(
 CustomerID INT PRIMARY KEY,
 Account NVARCHAR(50) NOT NULL,
 FirstName NVARCHAR(50) NOT NULL,
@@ -100,13 +100,13 @@ ModifiedDate DATETIME NOT NULL,
 FOREIGN KEY (AddressID) REFERENCES NDS.Address(AddressID)
 );
 
-CREATE TABLE NDS.ProductCategory(
+CREATE OR REPLACE TABLE NDS.ProductCategory(
 ProductCategoryID INT PRIMARY KEY,
 Name NVARCHAR(50) NOT NULL,
 ModifiedDate DATETIME NOT NULL
 );
 
-CREATE TABLE NDS.Product(
+CREATE OR REPLACE TABLE NDS.Product(
 ProductID INT PRIMARY KEY,
 ProductName NVARCHAR(50) NOT NULL,
 ProductNumber NVARCHAR(50) NOT NULL,
@@ -117,7 +117,7 @@ ModifiedDate DATETIME NOT NULL,
 FOREIGN KEY (ProductCategoryID) REFERENCES NDS.ProductCategory(ProductCategoryID)
 );
 
-CREATE TABLE NDS.BillHeader(
+CREATE OR REPLACE TABLE NDS.BillHeader(
 BillHeaderID INT PRIMARY KEY,
 Date DATETIME NOT NULL,
 CustomerID INT NOT NULL,
@@ -127,7 +127,7 @@ ModifiedDate DATETIME NOT NULL,
 FOREIGN KEY (CustomerID) REFERENCES NDS.Customer(CustomerID)
 );
 
-CREATE TABLE NDS.BillDetail(
+CREATE OR REPLACE TABLE NDS.BillDetail(
 BillDetailID INT PRIMARY KEY,
 BillHeaderID INT NOT NULL,
 OrderQty INT NOT NULL,
@@ -222,7 +222,7 @@ $$
     }
     return(result);
 $$;
----Add SLET in etldate table everytime etl ends
+---Add LSET in etldate table everytime etl ends
 create or replace procedure add_lset()
 returns string
 language javascript
@@ -234,20 +234,17 @@ $$
     result_set1.next();
     if (result_set1.getColumnValue(1)===null)
     {
-    maxid=0;
-    CET=Date.now();
+        maxid=0;
+        CET=CURRENT_TIMESTAMP();
     }
     else
     {
-    maxid=result_set1.getColumnValue(1);
-    CET=result_set1.getColumnValue(2);
+        maxid=result_set1.getColumnValue(1);
+        CET=result_set1.getColumnValue(2);
     }
-     try {
-    sqlcommand=`insert into utils.etldate(etldateid,lset) values(:1 +1,:2)`
-    statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,cet]});
-    result_set1 = statement1.execute();
-    result_set1.next();
-    result = "Number of rows affected: " +result_set1.getColumnValue(1);
+    try {
+        snowflake.execute({sqlText: `insert into utils.etldate(etldateid,lset) values(? +1, ?)`,binds:[maxid,CET]});
+        result = "Success";
     }
     catch (err)  {
         result = "Failed";
@@ -284,9 +281,10 @@ $$
     maxid=result_set1.getColumnValue(1);
     }
     try {
-    sql_command= `insert into nds.territory select row_number() over (ORDER BY 1) + :1 rn,c1.territory,CURRENT_TIMESTAMP() from 
-    (select distinct(c.territory) territory from stage.customer c where c.modifieddate>= :2 and c.modifieddate < :3 ) c1 
-    where c1.territory not in (select nt.territory from nds.territory nt)`
+    sql_command= `insert into nds.territory select row_number() over (ORDER BY 1) + :1 rn, territory, modifieddate from 
+    (SELECT territory, modifieddate FROM stage.customer
+    WHERE customerid IN (SELECT MIN(customerid) FROM stage.customer GROUP BY territory) and modifieddate>= :2 and modifieddate < :3 
+    and territory not in (select nt.territory from nds.territory nt))`
     statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]});
     result_set1 = statement1.execute();
     result_set1.next();
@@ -313,7 +311,7 @@ $$
     result_set1.next();
     var LSET=result_set1.getColumnValue(1);
     var CET=result_set1.getColumnValue(2);
-    sql_command =` select max(t.stateid) maxid from nds.state t`;
+    sql_command =`select max(t.stateid) maxid from nds.state t`;
     statement1 = snowflake.createStatement( {sqlText: sql_command} );
     result_set1 = statement1.execute();
     result_set1.next();
@@ -326,12 +324,12 @@ $$
     maxid=result_set1.getColumnValue(1);
     }
     try {
-    sql_command= `insert into nds.state select row_number() over (ORDER BY 1)+ :1 rn,t.state,t.territoryid,CURRENT_TIMESTAMP() from
-    (select c1.state,nt.territoryid 
-    from (select distinct c.state,c.territory 
-            from stage.customer c where c.modifieddate>= :2 and c.modifieddate < :3 ) c1 inner join nds.territory nt on nt.territory = c1.territory) t
-    where (t.state,t.territoryid) not in (select ns.state,ns.territoryid from nds.state ns)`
-    statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]} );
+    sql_command= `insert into nds.state select row_number() over (ORDER BY 1)+ :1 rn, t.state, t.territoryid, t.modifieddate from
+    (select c.state, nt.territoryid, c.modifieddate FROM stage.customer c
+    inner join nds.territory nt on nt.territory = c.territory
+    WHERE c.customerid IN (SELECT MIN(customerid) FROM stage.customer GROUP BY state, territory) and c.modifieddate>= :2 and c.modifieddate < :3) t 
+    WHERE (t.state,t.territoryid) not in (select ns.state,ns.territoryid from nds.state ns);`
+    statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]});
     result_set1 = statement1.execute();
     result_set1.next();
     result = "Number of rows affected: " +result_set1.getColumnValue(1);
@@ -370,11 +368,13 @@ $$
     maxid=result_set1.getColumnValue(1);
     }
     try {
-    sql_command= `insert into nds.productcategory select row_number() over (ORDER BY 1)+ :1 rn,sp1.productcategory,CURRENT_TIMESTAMP() from
-    (select distinct(sp.productcategory) from stage.product sp where sp.modifieddate>= :2 and sp.modifieddate < :3 ) sp1
-    where sp1.productcategory not in(select np.name from nds.productcategory np)`
+    sql_command= `insert into nds.productcategory select row_number() over (ORDER BY 1)+ :1 rn,productcategory, modifieddate from
+    (SELECT productcategory, modifieddate FROM stage.product
+    WHERE productid IN (SELECT MIN(productid) FROM stage.product GROUP BY productcategory) and modifieddate>= :2 and modifieddate < :3
+    and productcategory not in(select np.name from nds.productcategory np))`
     statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]} );
     result_set1 = statement1.execute();
+    result_set1.next()
     result = "Number of rows affected: " +result_set1.getColumnValue(1);
     }
     catch (err)  {
@@ -412,17 +412,17 @@ $$
     }
     try {
     sql_command=`update nds.product
-        set productname=t.productname,standardcost=t.standardcost,listprice=t.listprice,productcategoryid=t.productcategoryid,modifieddate=CURRENT_TIMESTAMP()
-        from (select sp1.productname,sp1.productnumber,sp1.standardcost,sp1.listprice,np1.productcategoryid from
-                (select sp.productname,sp.productnumber,sp.standardcost,sp.listprice,sp.productcategory from stage.product sp where sp.modifieddate>= :1 and sp.modifieddate < :2) sp1 
+        set productname=t.productname,standardcost=t.standardcost,listprice=t.listprice,productcategoryid=t.productcategoryid,modifieddate=t.modifieddate
+        from (select sp1.productname,sp1.productnumber,sp1.standardcost,sp1.listprice,np1.productcategoryid,sp1.modifieddate from
+                (select sp.productname,sp.productnumber,sp.standardcost,sp.listprice,sp.productcategory,sp.modifieddate from stage.product sp where sp.modifieddate>= :1 and sp.modifieddate < :2) sp1 
                     inner join (select np.productcategoryid,np.name from nds.productcategory np) np1 on np1.name=sp1.productcategory) t
           where nds.product.productnumber=t.productnumber`
     var statement2 = snowflake.createStatement( {sqlText: sql_command,binds:[LSET,CET]} );
     var result_set2 = statement2.execute();
     result_set2.next();
-    sql_command= `insert into nds.product select row_number() over (ORDER BY 1)+ :1 rn,t.productname,t.productnumber,t.standardcost,t.listprice,t.productcategoryid,CURRENT_TIMESTAMP() from 
-    (select sp1.productname,sp1.productnumber,sp1.standardcost,sp1.listprice,np1.productcategoryid from
-        (select sp.productname,sp.productnumber,sp.standardcost,sp.listprice,sp.productcategory from stage.product sp where sp.modifieddate>= :2 and sp.modifieddate < :3) sp1 
+    sql_command= `insert into nds.product select row_number() over (ORDER BY 1)+ :1 rn,t.productname,t.productnumber,t.standardcost,t.listprice,t.productcategoryid,t.modifieddate from 
+    (select sp1.productname,sp1.productnumber,sp1.standardcost,sp1.listprice,np1.productcategoryid,sp1.modifieddate from
+        (select sp.productname,sp.productnumber,sp.standardcost,sp.listprice,sp.productcategory, sp.modifieddate from stage.product sp where sp.modifieddate>= :2 and sp.modifieddate < :3) sp1 
             inner join (select np.productcategoryid,np.name from nds.productcategory np) np1 on np1.name=sp1.productcategory) t
     where t.productnumber not in(select np2.productnumber from nds.product np2)`
     statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]} );
@@ -465,11 +465,16 @@ $$
     maxid=result_set1.getColumnValue(1);
     }
     try {
-    sql_command= `insert into nds.address select st1.rn + :1,st1.address,st1.city,ns2.stateid,current_timestamp() from 
-    (select st.address,st.city,st.state,st.territory,row_number() over (order by 1) rn from stage.customer st where st.modifieddate>=:2 and  st.modifieddate < :3) st1
-    inner join (select ns1.stateid,ns1.state,nt1.territory from 
-                    (select ns.stateid,ns.state,ns.territoryid from nds.state ns) ns1 inner join 
-                      (select nt.territoryid,nt.territory from nds.territory nt) nt1 on ns1.territoryid=nt1.territoryid) ns2 on ns2.state= st1.state and ns2.territory=st1.territory`
+    sql_command= `insert into nds.address select st1.rn + :1,st1.address,st1.city,st1.stateid,modifieddate from 
+    (SELECT c.ADDRESS, c.CITY, s.STATEID, c.MODIFIEDDATE, row_number() over (order by 1) rn 
+      FROM STAGE.CUSTOMER c 
+      INNER JOIN 
+      NDS.STATE s
+      ON c.STATE = s.STATE
+      WHERE c.CustomerID IN (SELECT MIN(CustomerID) FROM STAGE.CUSTOMER GROUP BY ADDRESS, CITY, STATE)
+      AND (c.ADDRESS, c.CITY, s.STATEID) NOT IN (SELECT nd.ADDRESS, nd.CITY, nd.STATEID FROM nds.Address nd)
+      AND c.MODIFIEDDATE >=:2
+      AND c.MODIFIEDDATE <:3) st1;`
     statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[maxid,LSET,CET]} );
     result_set1 = statement1.execute();
     result_set1.next();
@@ -511,17 +516,16 @@ $$
     }
     try {
     sql_command= `merge into nds.customer 
-    using (select row_number() over (order by 1) rn,sc.ACCOUNT,sc.FIRSTNAME,sc.LASTNAME,sc.DATEOFBIRTH,sc.GENDER,ns2.addressid,current_timestamp() from stage.customer sc
-           inner join (select na1.addressid,na1.address,ns1.state,nt1.territory from 
-                    (select na.addressid,na.address,na.city,na.stateid from nds.address na) na1 inner join
-                    (select ns.stateid,ns.state,ns.territoryid from nds.state ns) ns1 on na1.stateid=ns1.stateid inner join 
-                      (select nt.territoryid,nt.territory from nds.territory nt) nt1 on ns1.territoryid=nt1.territoryid) ns2
-            on ns2.address=sc.address and ns2.address=sc.address and ns2.state=sc.state and ns2.territory=sc.territory) t
+    using (select row_number() over (order by 1) rn,c.Account, c.FirstName, c.LastName, c.DateOfBirth, c.Gender, a.AddressID, c.ModifiedDate 
+            FROM STAGE.customer c
+            INNER JOIN NDS.State s ON c.STATE = s.STATE
+            INNER JOIN NDS.Address a ON c.Address = a.Address AND s.StateID = a.StateID AND c.City = a.City
+            WHERE c.MODIFIEDDATE >=:1 AND c.MODIFIEDDATE <:2) t
     on t.account=nds.customer.account
     when matched then
-        update set FIRSTNAME=t.FIRSTNAME,LASTNAME=t.LASTNAME,DATEOFBIRTH=t.DATEOFBIRTH,GENDER=t.GENDER,addressid=t.addressid,MODIFIEDDATE=current_timestamp()
+        update set FIRSTNAME=t.FIRSTNAME,LASTNAME=t.LASTNAME,DATEOFBIRTH=t.DATEOFBIRTH,GENDER=t.GENDER,addressid=t.addressid,MODIFIEDDATE=t.ModifiedDate 
     when not matched then
-        insert (customerid,ACCOUNT,FIRSTNAME,LASTNAME,DATEOFBIRTH,GENDER,addressid,modifieddate) values (t.rn+:3,t.ACCOUNT,t.FIRSTNAME,t.LASTNAME,t.DATEOFBIRTH,t.GENDER,t.addressid,current_timestamp())`
+        insert (customerid,ACCOUNT,FIRSTNAME,LASTNAME,DATEOFBIRTH,GENDER,addressid,modifieddate) values (t.rn+:3,t.ACCOUNT,t.FIRSTNAME,t.LASTNAME,t.DATEOFBIRTH,t.GENDER,t.addressid,t.ModifiedDate)`
     statement1 = snowflake.createStatement( {sqlText: sql_command,binds:[LSET,CET,maxid]} );
     result_set1 = statement1.execute();
     result_set1.next();result = "Number of rows affected: " +result_set1.getColumnValue(1);
@@ -560,8 +564,8 @@ $$
     maxid=result_set1.getColumnValue(1);
     }
     try {
-    sql_command= `insert into nds.billheader select row_number() over(order by 1) + :1 rn,sb1.orderdate,nc1.CUSTOMERID,sb1.SUBTOTAL ,sb1.UUID,current_timestamp()
-    from (select sb.BILLHEADERID,sb.UUID,sb.CUSTOMERID,sum(sb.ORDERQTY*sb.UNITPRICE) SUBTOTAL,sb.orderdate
+    sql_command= `insert into nds.billheader select row_number() over(order by 1) + :1 rn,sb1.orderdate,nc1.CUSTOMERID,sb1.SUBTOTAL ,sb1.UUID,sb1.modifieddate
+    from (select sb.BILLHEADERID,sb.UUID,sb.CUSTOMERID,sum(sb.ORDERQTY*sb.UNITPRICE) SUBTOTAL,sb.orderdate, max(sb.modifieddate) as modifieddate
             from stage.billdetail sb 
             where sb.modifieddate>=:2 and  sb.modifieddate < :3
             group by sb.billheaderid,sb.CUSTOMERID,sb.UUID,sb.orderdate) sb1
@@ -607,8 +611,8 @@ $$
     maxid=result_set1.getColumnValue(1);
     }
     try {
-    sql_command= `insert into nds.billdetail select row_number() over (order by 1) +:1 rn,nb1.BILLHEADERID,sb1.ORDERQTY,np1.productid,sb1.UNITPRICE,sb1.LINEPROFIT,current_timestamp()
-    from (select sb.ORDERQTY,sb.PRODUCTID,sb.UNITPRICE,sb.LINEPROFIT,sb.uuid 
+    sql_command= `insert into nds.billdetail select row_number() over (order by 1) +:1 rn,nb1.BILLHEADERID,sb1.ORDERQTY,np1.productid,sb1.UNITPRICE,sb1.LINEPROFIT,sb1.modifieddate
+    from (select sb.ORDERQTY,sb.PRODUCTID,sb.UNITPRICE,sb.LINEPROFIT,sb.uuid, sb.modifieddate
             from stage.billdetail sb 
             where sb.modifieddate>=:2 and  sb.modifieddate < :3 )sb1
     inner join (select nb.uuid,nb.billheaderid from nds.billheader nb) nb1 on nb1.uuid=sb1.uuid
@@ -670,7 +674,7 @@ CREATE OR REPLACE PROCEDURE procProduct()
         snowflake.execute ({sqlText: sql_command1});
         snowflake.execute ({sqlText: sql_command2});
         snowflake.execute ({sqlText: sql_command3});
-	snowflake.execute ({sqlText: sql_command4})
+        snowflake.execute ({sqlText: sql_command4}); 
         result = "Succeeded";
         }
     catch (err)  {
@@ -874,6 +878,11 @@ CREATE OR REPLACE FILE FORMAT PROJECT1.STAGE.CSV_FILE TYPE = 'CSV' COMPRESSION =
 SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = 'NONE' TRIM_SPACE = FALSE ERROR_ON_COLUMN_COUNT_MISMATCH = TRUE ESCAPE = 'NONE' 
 ESCAPE_UNENCLOSED_FIELD = '\134' DATE_FORMAT = 'AUTO' TIMESTAMP_FORMAT = 'AUTO' NULL_IF = ('\\N');
 
+-- Create stream
+USE SCHEMA STAGE;
+CREATE OR REPLACE STREAM bill_stream
+ON TABLE PROJECT1.STAGE.BILLDETAIL;
+
 -- Create Task
 USE SCHEMA UTILS;
 CREATE OR REPLACE TASK task_master
@@ -960,7 +969,11 @@ warehouse = Project1_wh
 after task_dds_factsales
 as
     call procCleanup();
-
+CREATE OR REPLACE TASK task_lset
+warehouse = Project1_wh
+after task_dds_factsales
+as
+    call add_lset();
 
 ALTER TASK TASK_CLEANUP RESUME;
 ALTER TASK TASK_DDS_CUSTOMER RESUME;
@@ -975,7 +988,9 @@ ALTER TASK TASK_NDS_PRODUCT RESUME;
 ALTER TASK TASK_NDS_PRODUCTCATEGORY RESUME;
 ALTER TASK TASK_NDS_STATE RESUME;
 ALTER TASK TASK_NDS_TERRITORY RESUME;
-ALTER TASK TASK_MASTER RESUME; 
+ALTER TASK TASK_LSET RESUME;
+ALTER TASK TASK_MASTER RESUME;
+
 -- Create Trainer account
 USE ROLE ACCOUNTADMIN;
 CREATE OR REPLACE USER longbv1 password='abc123' default_role = trainer;
