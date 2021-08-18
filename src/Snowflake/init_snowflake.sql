@@ -669,7 +669,7 @@ CREATE OR REPLACE PROCEDURE procProduct()
 
   var sql_command4 =
   "INSERT INTO PROJECT1.DDS.DimProduct (SourceProductID, ProductNumber, ProductName, Category, StandardCost, ListPrice, ValidFrom)\
-    SELECT s.ProductID, s.ProductName, s.ProductName, s.Category, s.StandardCost , s.ListPrice, s.ModifiedDate\
+    SELECT s.ProductID, s.ProductNumber, s.ProductName, s.Category, s.StandardCost , s.ListPrice, s.ModifiedDate\
     FROM StageDimProduct s;";
   
   try {
