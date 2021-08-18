@@ -1,3 +1,11 @@
+USE ROLE SYSADMIN;
+-- Create Warehouse
+CREATE OR REPLACE WAREHOUSE Project1_WH WITH WAREHOUSE_SIZE = 'XSMALL' WAREHOUSE_TYPE = 'STANDARD'
+AUTO_SUSPEND = 300 AUTO_RESUME = TRUE COMMENT = 'Warehouse for load and transform' initially_suspended=true;
+
+CREATE OR REPLACE WAREHOUSE PowerBI_WH WITH WAREHOUSE_SIZE = 'XSMALL' WAREHOUSE_TYPE = 'STANDARD'
+AUTO_SUSPEND = 60 AUTO_RESUME = TRUE COMMENT = 'Warehouse for PowerBI' initially_suspended=true;
+
 -- Create database
 USE ROLE SYSADMIN;
 CREATE OR REPLACE DATABASE Project1
@@ -25,7 +33,7 @@ ModifiedDate DATETIME NOT NULL
 
 CREATE TABLE STAGE.Product(
 ProductID INT PRIMARY KEY,
-ProductName NVARCHAR(50) NOT NULL,
+ProductNumber NVARCHAR(50) NOT NULL,
 ProductName NVARCHAR(50) NOT NULL,
 StandardCost FLOAT NOT NULL,
 ListPrice FLOAT NOT NULL,
@@ -100,8 +108,8 @@ ModifiedDate DATETIME NOT NULL
 
 CREATE TABLE NDS.Product(
 ProductID INT PRIMARY KEY,
-ProductNumber NVARCHAR(50) NOT NULL,
 ProductName NVARCHAR(50) NOT NULL,
+ProductNumber NVARCHAR(50) NOT NULL,
 StandardCost FLOAT NOT NULL,
 ListPrice FLOAT NOT NULL,
 ProductCategoryID INT NOT NULL,
@@ -191,6 +199,7 @@ FOREIGN KEY (CustomerKey) REFERENCES DDS.DimCustomer(CustomerKey),
 FOREIGN KEY (LocationKey) REFERENCES DDS.DimLocation(LocationKey));
 
 --CREATE PROCEDURE
+USE SCHEMA UTILS;
 ---Update CET in etldate table everytime etl begins
 create or replace procedure update_CET()
 returns string
@@ -648,17 +657,20 @@ CREATE OR REPLACE PROCEDURE procProduct()
   var sql_command3 =
   "MERGE INTO PROJECT1.DDS.DimProduct t\
     USING StageDimProduct s\
-    ON t.SourceProductID = s.ProductID\
+    ON t.SourceProductID = s.ProductID AND t.ValidTo IS NULL\
     WHEN matched THEN\
-        UPDATE SET t.ValidTo = s.ModifiedDate\
-    WHEN NOT matched THEN\
-        INSERT (SourceProductID, ProductNumber, ProductName, Category, StandardCost, ListPrice, ValidFrom)\
-        VALUES (s.ProductID, s.ProductName, s.ProductName, s.Category, s.StandardCost , s.ListPrice, s.ModifiedDate);";
+        UPDATE SET t.ValidTo = s.ModifiedDate\;";
+
+  var sql_command4 =
+  "INSERT INTO PROJECT1.DDS.DimProduct (SourceProductID, ProductNumber, ProductName, Category, StandardCost, ListPrice, ValidFrom)\
+    SELECT s.ProductID, s.ProductName, s.ProductName, s.Category, s.StandardCost , s.ListPrice, s.ModifiedDate\
+    FROM StageDimProduct s;";
   
   try {
         snowflake.execute ({sqlText: sql_command1});
         snowflake.execute ({sqlText: sql_command2});
-        snowflake.execute ({sqlText: sql_command3}); 
+        snowflake.execute ({sqlText: sql_command3});
+	snowflake.execute ({sqlText: sql_command4})
         result = "Succeeded";
         }
     catch (err)  {
@@ -863,19 +875,107 @@ SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = 'NONE' TRIM_SPACE = FALSE ERROR_O
 ESCAPE_UNENCLOSED_FIELD = '\134' DATE_FORMAT = 'AUTO' TIMESTAMP_FORMAT = 'AUTO' NULL_IF = ('\\N');
 
 -- Create Task
-create or replace task data_into_nds
+USE SCHEMA UTILS;
+CREATE OR REPLACE TASK task_master
 warehouse = Project1_wh
-schedule= 'Using cron 0 0 17 8 * Asia/Ho_Chi_Minh'
+schedule= 'USING CRON 30 0 * * * Asia/Ho_Chi_Minh'
 as 
 	call update_CET();
+ALTER TASK task_master SUSPEND;
+
+CREATE OR REPLACE TASK task_nds_territory
+warehouse = Project1_wh
+after task_master
+as
 	call data_into_nds_territory();
+    
+CREATE OR REPLACE TASK task_nds_state
+warehouse = Project1_wh
+after task_nds_territory
+as    
 	call data_into_nds_state();
+
+CREATE OR REPLACE TASK task_nds_productcategory
+warehouse = Project1_wh
+after task_nds_state
+as    
 	call data_into_nds_productcategory();
+    
+CREATE OR REPLACE TASK task_nds_product
+warehouse = Project1_wh
+after task_nds_productcategory
+as    
 	call data_into_nds_product();
+
+CREATE OR REPLACE TASK task_nds_address
+warehouse = Project1_wh
+after task_nds_product
+as    
 	call data_into_nds_address();
+
+CREATE OR REPLACE TASK task_nds_customer
+warehouse = Project1_wh
+after task_nds_address
+as
 	call data_into_nds_customer();
+    
+CREATE OR REPLACE TASK task_nds_billheader
+warehouse = Project1_wh
+after task_nds_customer
+as
 	call data_into_nds_billheader();
-	call data_into_nds_detail();	
+    
+CREATE OR REPLACE TASK task_nds_detail
+warehouse = Project1_wh
+after task_nds_billheader
+as
+	call data_into_nds_detail();
+    
+CREATE OR REPLACE TASK task_dds_location
+warehouse = Project1_wh
+after task_nds_detail
+as
+    call procLocation();
+
+CREATE OR REPLACE TASK task_dds_product
+warehouse = Project1_wh
+after task_dds_location
+as
+    call procProduct();
+
+CREATE OR REPLACE TASK task_dds_customer
+warehouse = Project1_wh
+after task_dds_product
+as
+    call procCustomer();
+
+CREATE OR REPLACE TASK task_dds_factsales
+warehouse = Project1_wh
+after task_dds_customer
+as
+    call procFactSales();
+
+CREATE OR REPLACE TASK task_cleanup
+warehouse = Project1_wh
+after task_dds_factsales
+as
+    call procCleanup();
+
+
+ALTER TASK TASK_CLEANUP RESUME;
+ALTER TASK TASK_DDS_CUSTOMER RESUME;
+ALTER TASK TASK_DDS_FACTSALES RESUME;
+ALTER TASK TASK_DDS_LOCATION RESUME;
+ALTER TASK TASK_DDS_PRODUCT RESUME;
+ALTER TASK TASK_NDS_ADDRESS RESUME;
+ALTER TASK TASK_NDS_BILLHEADER RESUME;
+ALTER TASK TASK_NDS_CUSTOMER RESUME;
+ALTER TASK TASK_NDS_DETAIL RESUME;
+ALTER TASK TASK_NDS_PRODUCT RESUME;
+ALTER TASK TASK_NDS_PRODUCTCATEGORY RESUME;
+ALTER TASK TASK_NDS_STATE RESUME;
+ALTER TASK TASK_NDS_TERRITORY RESUME;
+ALTER TASK TASK_MASTER RESUME; 
 -- Create Trainer account
 USE ROLE ACCOUNTADMIN;
 CREATE OR REPLACE USER longbv1 password='abc123' default_role = trainer;
