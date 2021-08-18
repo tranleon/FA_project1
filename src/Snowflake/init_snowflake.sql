@@ -879,7 +879,7 @@ SKIP_HEADER = 1 FIELD_OPTIONALLY_ENCLOSED_BY = 'NONE' TRIM_SPACE = FALSE ERROR_O
 ESCAPE_UNENCLOSED_FIELD = '\134' DATE_FORMAT = 'AUTO' TIMESTAMP_FORMAT = 'AUTO' NULL_IF = ('\\N');
 
 -- Create stream
-USE SCHEMA STAGE;
+USE SCHEMA UTILS;
 CREATE OR REPLACE STREAM bill_stream
 ON TABLE PROJECT1.STAGE.BILLDETAIL;
 
@@ -887,14 +887,24 @@ ON TABLE PROJECT1.STAGE.BILLDETAIL;
 USE SCHEMA UTILS;
 CREATE OR REPLACE TASK task_master
 warehouse = Project1_wh
-schedule= 'USING CRON 30 0 * * * Asia/Ho_Chi_Minh'
+--schedule = 'USING CRON 30 0 * * * Asia/Ho_Chi_Minh'
+schedule = '1 MINUTE'
+WHEN
+    SYSTEM$STREAM_HAS_DATA('bill_stream')
 as 
-	call update_CET();
+    insert into Stage.BillDetail select billdetailid, billheaderid, orderdate, customerid, productid, orderqty, unitprice, lineprofit, uuid, modifieddate from bill_stream where false;
+    
 ALTER TASK task_master SUSPEND;
+
+CREATE OR REPLACE TASK task_update_cet
+warehouse = Project1_wh
+after task_master
+as
+	call update_CET();
 
 CREATE OR REPLACE TASK task_nds_territory
 warehouse = Project1_wh
-after task_master
+after task_update_cet
 as
 	call data_into_nds_territory();
     
@@ -976,6 +986,7 @@ as
     call add_lset();
 
 ALTER TASK TASK_CLEANUP RESUME;
+ALTER TASK task_update_cet RESUME;
 ALTER TASK TASK_DDS_CUSTOMER RESUME;
 ALTER TASK TASK_DDS_FACTSALES RESUME;
 ALTER TASK TASK_DDS_LOCATION RESUME;
