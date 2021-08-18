@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Project1"
   DTS:PackageType="5"
-  DTS:VersionBuild="121"
-  DTS:VersionGUID="{7CBDC6C0-7944-4079-B2D9-D1321EEE361F}">
+  DTS:VersionBuild="126"
+  DTS:VersionGUID="{00A17401-AFA9-49EF-AE05-5ABD61CEAA08}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -26,7 +26,7 @@
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:FileUsageType="1"
-          DTS:ConnectionString="C:\Users\PC\Desktop\FA_project1-main\log\NewDataProfile\DataProfileBillDetail210817204050.xml" />
+          DTS:ConnectionString="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\log\NewDataProfile\DataProfileBillDetail210818100646.xml" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -39,7 +39,7 @@
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:FileUsageType="1"
-          DTS:ConnectionString="C:\Users\PC\Desktop\FA_project1-main\log\NewDataProfile\DataProfileCustomer210817204050.xml" />
+          DTS:ConnectionString="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\log\NewDataProfile\DataProfileCustomer210818100646.xml" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -52,7 +52,7 @@
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:FileUsageType="1"
-          DTS:ConnectionString="C:\Users\PC\Desktop\FA_project1-main\log\NewDataProfile\DataProfileProduct210817204050.xml" />
+          DTS:ConnectionString="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\log\NewDataProfile\DataProfileProduct210818100646.xml" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -70,7 +70,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x003C_none_x003E_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="C:\Users\PC\Desktop\FA_project1-main\resources\error-folder\ErrorBill210817204050.csv">
+          DTS:ConnectionString="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\resources\error-folder\ErrorBill210818100646.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -179,7 +179,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x003C_none_x003E_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="C:\Users\PC\Desktop\FA_project1-main\resources\error-folder\ErrorCustomer210817204050.csv">
+          DTS:ConnectionString="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\resources\error-folder\ErrorCustomer210818100646.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -314,7 +314,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x003C_none_x003E_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="C:\Users\PC\Desktop\FA_project1-main\resources\error-folder\ErrorProduct210817204050.csv">
+          DTS:ConnectionString="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\resources\error-folder\ErrorProduct210818100646.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -420,7 +420,7 @@
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:FileUsageType="1"
-          DTS:ConnectionString="C:\Users\PC\Desktop\FA_project1-main\log\SSISLog210817.txt" />
+          DTS:ConnectionString="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\log\SSISLog210818.txt" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -461,7 +461,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x003C_none_x003E_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="C:\Users\PC\Desktop\FA_project1-main\resources\raw-folder\CustomerData-2021_08_12-11_34_09_AM">
+          DTS:ConnectionString="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\resources\import-folder\CustomerData-2021_08_12-11_34_09_AM">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -554,7 +554,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x003C_none_x003E_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="C:\Users\PC\Desktop\FA_project1-main\resources\raw-folder\CustomerData-2021_08_12-11_34_09_AM">
+          DTS:ConnectionString="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\resources\import-folder\CustomerData-2021_08_12-11_34_09_AM">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -674,7 +674,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x003C_none_x003E_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="C:\Users\PC\Desktop\FA_project1-main\resources\raw-folder\CustomerData-2021_08_12-11_34_09_AM">
+          DTS:ConnectionString="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\resources\import-folder\CustomerData-2021_08_12-11_34_09_AM">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -758,7 +758,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x003C_none_x003E_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="C:\Users\PC\Desktop\FA_project1-main\resources\tmp\ETLCutoffTime210817204050.csv">
+          DTS:ConnectionString="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\resources\tmp\ETLCutoffTime210818100646.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -796,7 +796,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x003C_none_x003E_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="C:\Users\PC\Desktop\FA_project1-main\resources\tmp\StageBillDetail210817204050.csv">
+          DTS:ConnectionString="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\resources\tmp\StageBillDetail210818100646.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -899,7 +899,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x003C_none_x003E_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="C:\Users\PC\Desktop\FA_project1-main\resources\tmp\StageCustomer210817204050.csv">
+          DTS:ConnectionString="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\resources\tmp\StageCustomer210818100646.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -1017,7 +1017,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x003C_none_x003E_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="C:\Users\PC\Desktop\FA_project1-main\resources\tmp\StageProduct210817204050.csv">
+          DTS:ConnectionString="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\resources\tmp\StageProduct210818100646.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -1133,7 +1133,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ErrorFolder">
       <DTS:VariableValue
-        DTS:DataType="8">C:\Users\PC\Desktop\FA_project1-main\resources\error-folder</DTS:VariableValue>
+        DTS:DataType="8">C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\resources\error-folder</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -1162,7 +1162,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ImportFolder">
       <DTS:VariableValue
-        DTS:DataType="8">C:\Users\PC\Desktop\FA_project1-main\resources\import-folder</DTS:VariableValue>
+        DTS:DataType="8">C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\resources\import-folder</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -1182,7 +1182,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="LogFolder">
       <DTS:VariableValue
-        DTS:DataType="8">C:\Users\PC\Desktop\FA_project1-main\log</DTS:VariableValue>
+        DTS:DataType="8">C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\log</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -1191,18 +1191,18 @@
       DTS:Namespace="User"
       DTS:ObjectName="ProjectPath">
       <DTS:VariableValue
-        DTS:DataType="8">C:\Users\PC\Desktop\FA_project1-main</DTS:VariableValue>
+        DTS:DataType="8">C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
       DTS:DTSID="{33089C7A-BC70-442A-A8FA-9D91F8E4875D}"
       DTS:EvaluateAsExpression="True"
-      DTS:Expression="@[User::ProjectPath]+&quot;\\resources\\raw-folder&quot;"
+      DTS:Expression="@[User::ProjectPath]+&quot;\\resources\\import-folder&quot;"
       DTS:IncludeInDebugDump="2345"
       DTS:Namespace="User"
       DTS:ObjectName="RawFolder">
       <DTS:VariableValue
-        DTS:DataType="8">C:\Users\PC\Desktop\FA_project1-main\resources\raw-folder</DTS:VariableValue>
+        DTS:DataType="8">C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\resources\import-folder</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -1222,7 +1222,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="TempFolder">
       <DTS:VariableValue
-        DTS:DataType="8">C:\Users\PC\Desktop\FA_project1-main\resources\tmp</DTS:VariableValue>
+        DTS:DataType="8">C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\resources\tmp</DTS:VariableValue>
     </DTS:Variable>
   </DTS:Variables>
   <DTS:LoggingOptions
@@ -1314,7 +1314,7 @@
           DTS:LocaleID="-1"
           DTS:ObjectName="DFT Bill"
           DTS:TaskContact="Data Profiling Task; Microsoft Corporation; SQL Server 2019; (c) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-          DTS:ThreadHint="2">
+          DTS:ThreadHint="1">
           <DTS:Variables />
           <DTS:LoggingOptions
             DTS:FilterKind="0" />
@@ -1383,7 +1383,7 @@
           DTS:LocaleID="-1"
           DTS:ObjectName="DFT Customer"
           DTS:TaskContact="Data Profiling Task; Microsoft Corporation; SQL Server 2019; (c) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-          DTS:ThreadHint="1">
+          DTS:ThreadHint="0">
           <DTS:Variables />
           <DTS:LoggingOptions
             DTS:FilterKind="0" />
@@ -1451,7 +1451,7 @@
           DTS:LocaleID="-1"
           DTS:ObjectName="DFT Product"
           DTS:TaskContact="Data Profiling Task; Microsoft Corporation; SQL Server 2019; (c) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-          DTS:ThreadHint="0">
+          DTS:ThreadHint="2">
           <DTS:Variables />
           <DTS:LoggingOptions
             DTS:FilterKind="0" />
@@ -2898,8 +2898,8 @@ WHERE [ValidTo] IS NULL</property>
         DTS:Name="WorkingDirectory">@[User::ProjectPath]+"\\src\\Snowsql\\"</DTS:PropertyExpression>
       <DTS:ObjectData>
         <ExecuteProcessData
-          Executable="C:\Users\PC\Desktop\FA_project1-main\src\Snowsql\connect_snowsql.bat"
-          WorkingDirectory="C:\Users\PC\Desktop\FA_project1-main\src\Snowsql\" />
+          Executable="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\src\Snowsql\connect_snowsql.bat"
+          WorkingDirectory="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\src\Snowsql\" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -2919,7 +2919,7 @@ WHERE [ValidTo] IS NULL</property>
         <DTS:ObjectData>
           <ForEachFileEnumeratorProperties>
             <FEFEProperty
-              Folder="C:\Users\PC\Desktop\FA_project1-main\resources\raw-folder" />
+              Folder="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\resources\import-folder" />
             <FEFEProperty
               FileSpec="*.csv" />
             <FEFEProperty
@@ -2933,6 +2933,27 @@ WHERE [ValidTo] IS NULL</property>
       <DTS:LoggingOptions
         DTS:FilterKind="0" />
       <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Read CSV to Staging Bill Table\Delete Raw BillData"
+          DTS:CreationName="Microsoft.FileSystemTask"
+          DTS:Description="File System Task"
+          DTS:DTSID="{fd885613-3df9-494c-8a0f-1158d48ac449}"
+          DTS:ExecutableType="Microsoft.FileSystemTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Delete Raw BillData"
+          DTS:TaskContact="File System Task;Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <FileSystemData
+              TaskOperationType="DeleteFile"
+              TaskSourcePath="{C99FF872-A7B9-46C3-9919-CB65BD915539}"
+              TaskDestinationPath="User::ImportFolder"
+              TaskIsDestinationVariable="True" />
+          </DTS:ObjectData>
+        </DTS:Executable>
         <DTS:Executable
           DTS:refId="Package\Read CSV to Staging Bill Table\DFT BillDetail"
           DTS:CreationName="Microsoft.Pipeline"
@@ -3983,27 +4004,6 @@ WHERE [ValidTo] IS NULL</property>
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
-          DTS:refId="Package\Read CSV to Staging Bill Table\Move Raw BillData"
-          DTS:CreationName="Microsoft.FileSystemTask"
-          DTS:Description="File System Task"
-          DTS:DTSID="{fd885613-3df9-494c-8a0f-1158d48ac449}"
-          DTS:ExecutableType="Microsoft.FileSystemTask"
-          DTS:LocaleID="-1"
-          DTS:ObjectName="Move Raw BillData"
-          DTS:TaskContact="File System Task;Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-          DTS:ThreadHint="0">
-          <DTS:Variables />
-          <DTS:LoggingOptions
-            DTS:FilterKind="0" />
-          <DTS:ObjectData>
-            <FileSystemData
-              TaskOperationType="MoveFile"
-              TaskSourcePath="{C99FF872-A7B9-46C3-9919-CB65BD915539}"
-              TaskDestinationPath="User::ImportFolder"
-              TaskIsDestinationVariable="True" />
-          </DTS:ObjectData>
-        </DTS:Executable>
-        <DTS:Executable
           DTS:refId="Package\Read CSV to Staging Bill Table\Placeholder"
           DTS:CreationName="Microsoft.ScriptTask"
           DTS:Description="Script Task"
@@ -4042,7 +4042,7 @@ WHERE [ValidTo] IS NULL</property>
           DTS:From="Package\Read CSV to Staging Bill Table\DFT BillDetail"
           DTS:LogicalAnd="True"
           DTS:ObjectName="Constraint 5"
-          DTS:To="Package\Read CSV to Staging Bill Table\Move Raw BillData" />
+          DTS:To="Package\Read CSV to Staging Bill Table\Delete Raw BillData" />
       </DTS:PrecedenceConstraints>
       <DTS:ForEachVariableMappings>
         <DTS:ForEachVariableMapping
@@ -4070,7 +4070,7 @@ WHERE [ValidTo] IS NULL</property>
         <DTS:ObjectData>
           <ForEachFileEnumeratorProperties>
             <FEFEProperty
-              Folder="C:\Users\PC\Desktop\FA_project1-main\resources\raw-folder" />
+              Folder="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\resources\import-folder" />
             <FEFEProperty
               FileSpec="*.csv" />
             <FEFEProperty
@@ -4084,6 +4084,48 @@ WHERE [ValidTo] IS NULL</property>
       <DTS:LoggingOptions
         DTS:FilterKind="0" />
       <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Read CSV to Staging Customer and Product Table\Delete Raw CustomerData"
+          DTS:CreationName="Microsoft.FileSystemTask"
+          DTS:Description="File System Task"
+          DTS:DTSID="{DE718904-E6A5-4E3D-9F8E-771AEA054720}"
+          DTS:ExecutableType="Microsoft.FileSystemTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Delete Raw CustomerData"
+          DTS:TaskContact="File System Task;Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <FileSystemData
+              TaskOperationType="DeleteFile"
+              TaskSourcePath="{247BAC48-F630-4557-9BEC-17D178A52D88}"
+              TaskDestinationPath="User::ImportFolder"
+              TaskIsDestinationVariable="True" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Read CSV to Staging Customer and Product Table\Delete Raw ProductData"
+          DTS:CreationName="Microsoft.FileSystemTask"
+          DTS:Description="File System Task"
+          DTS:DTSID="{239e5a74-630d-48b7-90ab-2474008873a6}"
+          DTS:ExecutableType="Microsoft.FileSystemTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Delete Raw ProductData"
+          DTS:TaskContact="File System Task;Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:LoggingOptions
+            DTS:FilterKind="0" />
+          <DTS:ObjectData>
+            <FileSystemData
+              TaskOperationType="DeleteFile"
+              TaskSourcePath="{9ABBAA30-7FA9-416D-B2A3-00FE892CACCE}"
+              TaskDestinationPath="User::ImportFolder"
+              TaskIsDestinationVariable="True" />
+          </DTS:ObjectData>
+        </DTS:Executable>
         <DTS:Executable
           DTS:refId="Package\Read CSV to Staging Customer and Product Table\DFT Customer"
           DTS:CreationName="Microsoft.Pipeline"
@@ -7001,48 +7043,6 @@ AND ValidFrom &lt; (SELECT [CET]
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
-          DTS:refId="Package\Read CSV to Staging Customer and Product Table\Move Raw CustomerData"
-          DTS:CreationName="Microsoft.FileSystemTask"
-          DTS:Description="File System Task"
-          DTS:DTSID="{DE718904-E6A5-4E3D-9F8E-771AEA054720}"
-          DTS:ExecutableType="Microsoft.FileSystemTask"
-          DTS:LocaleID="-1"
-          DTS:ObjectName="Move Raw CustomerData"
-          DTS:TaskContact="File System Task;Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-          DTS:ThreadHint="0">
-          <DTS:Variables />
-          <DTS:LoggingOptions
-            DTS:FilterKind="0" />
-          <DTS:ObjectData>
-            <FileSystemData
-              TaskOperationType="MoveFile"
-              TaskSourcePath="{247BAC48-F630-4557-9BEC-17D178A52D88}"
-              TaskDestinationPath="User::ImportFolder"
-              TaskIsDestinationVariable="True" />
-          </DTS:ObjectData>
-        </DTS:Executable>
-        <DTS:Executable
-          DTS:refId="Package\Read CSV to Staging Customer and Product Table\Move Raw ProductData"
-          DTS:CreationName="Microsoft.FileSystemTask"
-          DTS:Description="File System Task"
-          DTS:DTSID="{239e5a74-630d-48b7-90ab-2474008873a6}"
-          DTS:ExecutableType="Microsoft.FileSystemTask"
-          DTS:LocaleID="-1"
-          DTS:ObjectName="Move Raw ProductData"
-          DTS:TaskContact="File System Task;Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-          DTS:ThreadHint="0">
-          <DTS:Variables />
-          <DTS:LoggingOptions
-            DTS:FilterKind="0" />
-          <DTS:ObjectData>
-            <FileSystemData
-              TaskOperationType="MoveFile"
-              TaskSourcePath="{9ABBAA30-7FA9-416D-B2A3-00FE892CACCE}"
-              TaskDestinationPath="User::ImportFolder"
-              TaskIsDestinationVariable="True" />
-          </DTS:ObjectData>
-        </DTS:Executable>
-        <DTS:Executable
           DTS:refId="Package\Read CSV to Staging Customer and Product Table\Placeholder"
           DTS:CreationName="Microsoft.ScriptTask"
           DTS:Description="Script Task"
@@ -7091,7 +7091,7 @@ AND ValidFrom &lt; (SELECT [CET]
           DTS:From="Package\Read CSV to Staging Customer and Product Table\DFT Customer"
           DTS:LogicalAnd="True"
           DTS:ObjectName="Constraint 3"
-          DTS:To="Package\Read CSV to Staging Customer and Product Table\Move Raw CustomerData" />
+          DTS:To="Package\Read CSV to Staging Customer and Product Table\Delete Raw CustomerData" />
         <DTS:PrecedenceConstraint
           DTS:refId="Package\Read CSV to Staging Customer and Product Table.PrecedenceConstraints[Constraint 4]"
           DTS:CreationName=""
@@ -7099,7 +7099,7 @@ AND ValidFrom &lt; (SELECT [CET]
           DTS:From="Package\Read CSV to Staging Customer and Product Table\DFT Product"
           DTS:LogicalAnd="True"
           DTS:ObjectName="Constraint 4"
-          DTS:To="Package\Read CSV to Staging Customer and Product Table\Move Raw ProductData" />
+          DTS:To="Package\Read CSV to Staging Customer and Product Table\Delete Raw ProductData" />
       </DTS:PrecedenceConstraints>
       <DTS:ForEachVariableMappings>
         <DTS:ForEachVariableMapping
@@ -7345,7 +7345,7 @@ AND ValidFrom &lt; (SELECT [CET]
           TopLeft="29,81" />
         <NodeLayout
           Size="144,42"
-          Id="Package\Read CSV to Staging Bill Table\Move Raw BillData"
+          Id="Package\Read CSV to Staging Bill Table\Delete Raw BillData"
           TopLeft="32,149" />
         <NodeLayout
           Size="137,42"
@@ -7414,11 +7414,11 @@ AND ValidFrom &lt; (SELECT [CET]
           TopLeft="205,72" />
         <NodeLayout
           Size="157,42"
-          Id="Package\Read CSV to Staging Customer and Product Table\Move Raw CustomerData"
+          Id="Package\Read CSV to Staging Customer and Product Table\Delete Raw CustomerData"
           TopLeft="19,142" />
         <NodeLayout
           Size="146,42"
-          Id="Package\Read CSV to Staging Customer and Product Table\Move Raw ProductData"
+          Id="Package\Read CSV to Staging Customer and Product Table\Delete Raw ProductData"
           TopLeft="205,140" />
         <NodeLayout
           Size="137,42"
@@ -7772,7 +7772,7 @@ AND ValidFrom &lt; (SELECT [CET]
     design-time-name="Package\DFT Create Temp Files for Snowflake">
     <LayoutInfo>
       <GraphLayout
-        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="143,43"
           Id="Package\DFT Create Temp Files for Snowflake\SRC Product"
@@ -7816,7 +7816,9 @@ AND ValidFrom &lt; (SELECT [CET]
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -7838,7 +7840,9 @@ AND ValidFrom &lt; (SELECT [CET]
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -7860,7 +7864,9 @@ AND ValidFrom &lt; (SELECT [CET]
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -7911,6 +7917,10 @@ AND ValidFrom &lt; (SELECT [CET]
       <GraphLayout
         Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
+          Size="143,42"
+          Id="Package\Read CSV to Staging Bill Table\DFT BillDetail\SRC BillData"
+          TopLeft="306,33" />
+        <NodeLayout
           Size="142,42"
           Id="Package\Read CSV to Staging Bill Table\DFT BillDetail\ErrorBillData"
           TopLeft="616,101" />
@@ -7923,13 +7933,33 @@ AND ValidFrom &lt; (SELECT [CET]
           Id="Package\Read CSV to Staging Bill Table\DFT BillDetail\Data Conversion"
           TopLeft="293,106" />
         <NodeLayout
-          Size="143,42"
-          Id="Package\Read CSV to Staging Bill Table\DFT BillDetail\SRC BillData"
-          TopLeft="306,33" />
-        <NodeLayout
           Size="165,42"
           Id="Package\Read CSV to Staging Bill Table\DFT BillDetail\GetChangedData"
           TopLeft="293,181" />
+        <EdgeLayout
+          Id="Package\Read CSV to Staging Bill Table\DFT BillDetail.Paths[NewData]"
+          TopLeft="376.25,223">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,53"
+              Start="0,0"
+              End="0,45.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,45.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-20.303359375,18.0390625,40.60671875,9.421875"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
         <EdgeLayout
           Id="Package\Read CSV to Staging Bill Table\DFT BillDetail.Paths[Flat File Source Output]"
           TopLeft="375.5,75">
@@ -7995,30 +8025,6 @@ AND ValidFrom &lt; (SELECT [CET]
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
               BoundingBox="11.16361328125,5,132.1727734375,11.43359375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\Read CSV to Staging Bill Table\DFT BillDetail.Paths[NewData]"
-          TopLeft="376.25,223">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,53"
-              Start="0,0"
-              End="0,45.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,45.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-20.303359375,18.0390625,40.60671875,9.421875"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
@@ -8268,7 +8274,7 @@ AND ValidFrom &lt; (SELECT [CET]
       <Property>
         <Name>OverwriteParamsSQLProp</Name>
         <Value
-          type="q2:boolean">false</Value>
+          type="q2:string">false</Value>
       </Property>
       <Property>
         <Name>UsedTableName</Name>
@@ -8278,7 +8284,7 @@ AND ValidFrom &lt; (SELECT [CET]
       <Property>
         <Name>TableInfoObjectType</Name>
         <Value
-          type="q4:int">0</Value>
+          type="q4:string">0</Value>
       </Property>
       <Property>
         <Name>DataSourceViewID</Name>
@@ -8528,7 +8534,7 @@ AND ValidFrom &lt; (SELECT [CET]
       <Property>
         <Name>OverwriteParamsSQLProp</Name>
         <Value
-          type="q2:boolean">false</Value>
+          type="q2:string">false</Value>
       </Property>
       <Property>
         <Name>UsedTableName</Name>
@@ -8538,7 +8544,7 @@ AND ValidFrom &lt; (SELECT [CET]
       <Property>
         <Name>TableInfoObjectType</Name>
         <Value
-          type="q4:int">0</Value>
+          type="q4:string">0</Value>
       </Property>
       <Property>
         <Name>DataSourceViewID</Name>

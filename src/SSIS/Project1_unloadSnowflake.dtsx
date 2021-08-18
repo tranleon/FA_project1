@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Package1"
   DTS:PackageType="5"
-  DTS:VersionBuild="8"
-  DTS:VersionGUID="{86CA7A2A-87F2-4A37-8B19-2D174E0BBFB3}">
+  DTS:VersionBuild="9"
+  DTS:VersionGUID="{59D8332D-A2FD-4724-B571-36C370F5E1FF}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -46,7 +46,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ProjectPath">
       <DTS:VariableValue
-        DTS:DataType="8">C:\Users\PC\Desktop\FA_project1-main</DTS:VariableValue>
+        DTS:DataType="8">C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution</DTS:VariableValue>
     </DTS:Variable>
   </DTS:Variables>
   <DTS:Executables>
@@ -69,8 +69,8 @@
         DTS:Name="WorkingDirectory">@[User::ProjectPath]+"\\src\\Snowsql\\"</DTS:PropertyExpression>
       <DTS:ObjectData>
         <ExecuteProcessData
-          Executable="C:\Users\PC\Desktop\FA_project1-main\src\Snowsql\connect_snowsql_unload.bat"
-          WorkingDirectory="C:\Users\PC\Desktop\FA_project1-main\src\Snowsql\" />
+          Executable="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\src\Snowsql\connect_snowsql_unload.bat"
+          WorkingDirectory="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\src\Snowsql\" />
       </DTS:ObjectData>
     </DTS:Executable>
   </DTS:Executables>
