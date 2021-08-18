@@ -26,7 +26,8 @@ State NVARCHAR(50) NOT NULL,
 Territory NVARCHAR(50) NOT NULL,
 DateOfBirth DATETIME NOT NULL,
 Gender VARCHAR(10),
-ModifiedDate DATETIME NOT NULL
+ValidFrom DATETIME NOT NULL,
+ValidTo DATETIME
 );
 
 CREATE TABLE STAGING.Product(
@@ -71,7 +72,7 @@ CREATE VIEW [NewCustomerData] AS
 SELECT [CustomerID], [Account], [FirstName], [LastName], [Address], [City], [State], [Territory]
       ,[DateOfBirth], [Gender]
 FROM [STAGING].[Customer]
-WHERE [ModifiedDate] > (SELECT CET FROM [UTILS].[ETLCutoffTime]);
+WHERE [ValidFrom] > (SELECT CET FROM [UTILS].[ETLCutoffTime]);
 
 GO
 CREATE VIEW [NewProductData] AS

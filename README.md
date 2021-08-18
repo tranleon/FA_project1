@@ -9,7 +9,7 @@ This project is using for demo to FA about how to initialize a project and draft
 ## Purpose
 Building the data pipeline
 
-## Detail of Work
+## Detail of Work![plot](./docs/design.png)
 1. Design data pipeline [here](./docs/design.png "Architecture")
 2. Ingest data from flat file
 3. Extract, captured new and changed data
