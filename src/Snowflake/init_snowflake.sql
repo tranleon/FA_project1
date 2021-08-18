@@ -6,6 +6,8 @@ AUTO_SUSPEND = 300 AUTO_RESUME = TRUE COMMENT = 'Warehouse for load and transfor
 CREATE OR REPLACE WAREHOUSE PowerBI_WH WITH WAREHOUSE_SIZE = 'XSMALL' WAREHOUSE_TYPE = 'STANDARD'
 AUTO_SUSPEND = 60 AUTO_RESUME = TRUE COMMENT = 'Warehouse for PowerBI' initially_suspended=true;
 
+USE WAREHOUSE Project1_WH;
+
 -- Create database
 USE ROLE SYSADMIN;
 CREATE OR REPLACE DATABASE Project1
@@ -856,11 +858,16 @@ CREATE OR REPLACE PROCEDURE procCleanup()
   var sql_command1 = "TRUNCATE TABLE PROJECT1.STAGE.BillDetail;";
   var sql_command2 = "TRUNCATE TABLE PROJECT1.STAGE.Product;";
   var sql_command3 = "TRUNCATE TABLE PROJECT1.STAGE.Customer;";  
-  
+  var sql_command4 = "insert into Stage.BillDetail select billdetailid, billheaderid, orderdate, customerid,\
+                        productid, orderqty, unitprice, lineprofit, uuid, modifieddate from bill_stream where false;";
+  var sql_command5 = "ALTER TASK TASK_MASTER RESUME;";
+
   try {
         snowflake.execute ({sqlText: sql_command1});
         snowflake.execute ({sqlText: sql_command2});
         snowflake.execute ({sqlText: sql_command3});
+        snowflake.execute ({sqlText: sql_command4});
+        snowflake.execute ({sqlText: sql_command5});
         result = "Succeeded";
         }
     catch (err)  {
@@ -891,8 +898,8 @@ warehouse = Project1_wh
 schedule = '1 MINUTE'
 WHEN
     SYSTEM$STREAM_HAS_DATA('bill_stream')
-as 
-    insert into Stage.BillDetail select billdetailid, billheaderid, orderdate, customerid, productid, orderqty, unitprice, lineprofit, uuid, modifieddate from bill_stream where false;
+as  
+    ALTER TASK TASK_MASTER SUSPEND;
     
 ALTER TASK task_master SUSPEND;
 
