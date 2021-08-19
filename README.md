@@ -38,6 +38,7 @@ Building the data pipeline
 8. Authen SnowSQL using proper user and run [init_snowflake.sql](./src/Snowflake/init_snowflake.sql).
 9. Open **PowerBI**, click Get Data, search for Snowflake.
 10. Connect to Snowflake server using your snowflake account.
+11. Create PowerBI dashboard. ![BIplot](./docs/Dashboard-ecommerce.png)
 
 ## Snowflake trainer account
 [Snowflake link](https://pv02258.ap-southeast-1.snowflakecomputing.com/)
