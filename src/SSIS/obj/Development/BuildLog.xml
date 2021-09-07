@@ -2,18 +2,18 @@
 <BuildLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ProjectInfo>
     <Name>Project1</Name>
-    <LastWriteTime>2021-08-18T03:04:47.9011139Z</LastWriteTime>
+    <LastWriteTime>2021-09-06T09:30:41.6159464Z</LastWriteTime>
     <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
   </ProjectInfo>
   <LastBuildInfos>
     <ProjectBuildItemInfo>
       <Name>Project1_uploadSnowflake.dtsx</Name>
-      <LastWriteTime>2021-08-18T03:06:46.7811372Z</LastWriteTime>
+      <LastWriteTime>2021-09-06T09:28:52.7256924Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
       <Name>Project1_unloadSnowflake.dtsx</Name>
-      <LastWriteTime>2021-08-18T03:05:50.4766069Z</LastWriteTime>
+      <LastWriteTime>2021-09-06T09:28:51.5656524Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
   </LastBuildInfos>

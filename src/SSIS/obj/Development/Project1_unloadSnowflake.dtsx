@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Package1"
   DTS:PackageType="5"
-  DTS:VersionBuild="9"
-  DTS:VersionGUID="{59D8332D-A2FD-4724-B571-36C370F5E1FF}">
+  DTS:VersionBuild="17"
+  DTS:VersionGUID="{989375E0-2778-4D2D-B572-7D86214D2D29}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -37,7 +37,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ErrorEmail">
       <DTS:VariableValue
-        DTS:DataType="8">paq9695@gmail.com</DTS:VariableValue>
+        DTS:DataType="8">quocde99@gmail.com</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -46,7 +46,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="ProjectPath">
       <DTS:VariableValue
-        DTS:DataType="8">C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution</DTS:VariableValue>
+        DTS:DataType="8">E:\FPT\Project_02\FA_project1</DTS:VariableValue>
     </DTS:Variable>
   </DTS:Variables>
   <DTS:Executables>
@@ -69,8 +69,8 @@
         DTS:Name="WorkingDirectory">@[User::ProjectPath]+"\\src\\Snowsql\\"</DTS:PropertyExpression>
       <DTS:ObjectData>
         <ExecuteProcessData
-          Executable="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\src\Snowsql\connect_snowsql_unload.bat"
-          WorkingDirectory="C:\Users\PC\Downloads\FA_project1-quanpa2-ssis-solution\src\Snowsql\" />
+          Executable="E:\FPT\Project_02\FA_project1\src\Snowsql\connect_snowsql_unload.bat"
+          WorkingDirectory="E:\FPT\Project_02\FA_project1\src\Snowsql\" />
       </DTS:ObjectData>
     </DTS:Executable>
   </DTS:Executables>
@@ -108,7 +108,7 @@
           <DTS:ObjectData>
             <SQLTask:SqlTaskData
               SQLTask:Connection="{6F0E92FB-0BFD-4DAF-8C35-CA3375738442}"
-              SQLTask:SqlStatementSource="EXEC msdb.dbo.sp_send_dbmail&#xA;     @profile_name = 'Notifications',&#xA;     @recipients = ?,&#xA;     @body = 'The Package has Failed please check log file for more information',&#xA;     @subject = 'SSIS Package Failed';&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+              SQLTask:SqlStatementSource="EXEC msdb.dbo.sp_send_dbmail&#xA;     @profile_name = 'Testmail',&#xA;     @recipients = ?,&#xA;     @body = 'The Package has Failed please check log file for more information',&#xA;     @subject = 'SSIS Package Failed';&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
               <SQLTask:ParameterBinding
                 SQLTask:ParameterName="0"
                 SQLTask:DtsVariableName="User::ErrorEmail"
@@ -148,7 +148,7 @@
         <NodeLayout
           Size="173,42"
           Id="Package.EventHandlers[OnError]\Send Mail On Error"
-          TopLeft="214,257" />
+          TopLeft="262,216" />
       </GraphLayout>
     </LayoutInfo>
   </DtsEventHandler>
