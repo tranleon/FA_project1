@@ -14,7 +14,7 @@ cls
 
 echo Unload Start>> %logpath%/snowsql_log_"%logdate%".txt
 
-snowsql -d Project1 -s DDS -w PROJECT1_WH -r SYSADMIN -f %file_path%\unload.sql -D folder=%folder% -o output_file=%logpath%\snowsql_log_"%logdate%".txt
+snowsql -d Project1 -s DDS -w PROJECT1_WH -r ACCOUNTADMIN -f %file_path%\unload.sql -D folder=%folder% -o output_file=%logpath%\snowsql_log_"%logdate%".txt
 
 echo Unload Complete>> %logpath%/snowsql_log_%logdate%.txt
 echo --------------------------------------------------------------------------------------->> %logpath%/snowsql_log_%logdate%.txt
