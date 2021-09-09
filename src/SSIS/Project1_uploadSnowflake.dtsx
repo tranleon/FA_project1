@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
   DTS:refId="Package"
   DTS:CreationDate="8/11/2021 9:21:53 PM"
@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Project1"
   DTS:PackageType="5"
-  DTS:VersionBuild="227"
-  DTS:VersionGUID="{696474D1-A190-4603-9BCD-DD44AF8A6FB7}">
+  DTS:VersionBuild="244"
+  DTS:VersionGUID="{E6C28463-82F7-4AC7-B7BC-5D9152828F77}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -21,6 +21,8 @@
       DTS:CreationName="FLATFILE"
       DTS:DTSID="{B6327A8C-0658-49DA-AAB1-120D011E05D1}"
       DTS:ObjectName="BillDetailErrorTransform">
+      <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[$Project::BillDetaillTranform]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:Format="Delimited"
@@ -104,6 +106,8 @@
       DTS:CreationName="FLATFILE"
       DTS:DTSID="{CAF32EAC-2997-4C42-885F-767A5B12D48E}"
       DTS:ObjectName="BillRawData">
+      <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[$Project::BillRawData]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:Format="Delimited"
@@ -169,6 +173,8 @@
       DTS:CreationName="FLATFILE"
       DTS:DTSID="{C0206666-484B-4882-8EA7-DDCFD5174D7B}"
       DTS:ObjectName="CustomerErrorTransform">
+      <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[$Project::CustomerErrorTransform]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:Format="Delimited"
@@ -297,6 +303,8 @@
       DTS:CreationName="FLATFILE"
       DTS:DTSID="{84F8EECA-937A-4A90-BE74-4C0717DA9C12}"
       DTS:ObjectName="CustomerRaw">
+      <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[$Project::CustomerRaw]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:Format="Delimited"
@@ -407,6 +415,8 @@
       DTS:CreationName="FILE"
       DTS:DTSID="{D5ECE460-E6D5-4184-BED4-AF02DA6DB9E0}"
       DTS:ObjectName="DataProfileBillDetail.xml">
+      <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[$Project::DataProfilingBill]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:FileUsageType="1"
@@ -418,6 +428,8 @@
       DTS:CreationName="FILE"
       DTS:DTSID="{5F69B0F9-7DBF-47C2-834A-5817A1A6657F}"
       DTS:ObjectName="DataProfileCustomer.xml">
+      <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[$Project::DataProfilingCus]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:FileUsageType="1"
@@ -429,6 +441,8 @@
       DTS:CreationName="FILE"
       DTS:DTSID="{BF3BB2F1-4757-487E-BB55-B2394C0AEB95}"
       DTS:ObjectName="DataProfileProduct.xml">
+      <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[$Project::DataProfilingPro]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:FileUsageType="1"
@@ -436,39 +450,19 @@
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[localhost]"
-      DTS:CreationName="OLEDB"
-      DTS:DTSID="{E0334FED-6D73-4403-B371-2CADD236A21C}"
-      DTS:ObjectName="localhost">
-      <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:ConnectRetryCount="1"
-          DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=localhost;Initial Catalog=msdb;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
-      </DTS:ObjectData>
-    </DTS:ConnectionManager>
-    <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[localhost.NDS_Project2]"
-      DTS:CreationName="OLEDB"
-      DTS:DTSID="{DDCD7601-A323-4108-AC2F-8CB619F969F6}"
-      DTS:ObjectName="localhost.NDS_Project2">
-      <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:ConnectRetryCount="1"
-          DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=localhost;Initial Catalog=NDS_Project2;Provider=MSOLEDBSQL.1;Integrated Security=SSPI;Auto Translate=False;" />
-      </DTS:ObjectData>
-    </DTS:ConnectionManager>
-    <DTS:ConnectionManager
       DTS:refId="Package.ConnectionManagers[LocalHost.Project1]"
       DTS:CreationName="OLEDB"
       DTS:DTSID="{429176A7-411F-4F95-9C5D-89D1CB30086E}"
       DTS:ObjectName="LocalHost.Project1">
+      <DTS:PropertyExpression
+        DTS:Name="InitialCatalog">@[$Project::Databasename]</DTS:PropertyExpression>
+      <DTS:PropertyExpression
+        DTS:Name="ServerName">@[$Project::ServerName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=.;Initial Catalog=Project1;Provider=MSOLEDBSQL.1;Integrated Security=SSPI;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=localhost;Initial Catalog=Project1;Provider=MSOLEDBSQL.1;Integrated Security=SSPI;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -481,7 +475,7 @@
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:FileUsageType="1"
-          DTS:ConnectionString="E:\FPT\Project_02\FA_project1\log\SSISLog210906.txt" />
+          DTS:ConnectionString="E:\FPT\Project_02\FA_project1\log\SSISLog210909.txt" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -489,6 +483,8 @@
       DTS:CreationName="FLATFILE"
       DTS:DTSID="{0240A3B4-C28A-40F6-8289-82D6853E8748}"
       DTS:ObjectName="ProductData">
+      <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[$Project::ProductData]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:Format="Delimited"
@@ -563,6 +559,8 @@
       DTS:CreationName="FLATFILE"
       DTS:DTSID="{4D0BF97F-53A5-439C-8A9F-BE7BA46D6583}"
       DTS:ObjectName="ProductErrorTransform">
+      <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[$Project::ProductErrorTransform]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:Format="Delimited"
@@ -691,6 +689,10 @@
       DTS:CreationName="OLEDB"
       DTS:DTSID="{7DA0D058-DA7B-4EF4-B188-C4661214DD13}"
       DTS:ObjectName="Project1">
+      <DTS:PropertyExpression
+        DTS:Name="InitialCatalog">@[$Project::Databasename]</DTS:PropertyExpression>
+      <DTS:PropertyExpression
+        DTS:Name="ServerName">@[$Project::ServerName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
@@ -703,306 +705,13 @@
       DTS:CreationName="ADO.NET:System.Data.SqlClient.SqlConnection, System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
       DTS:DTSID="{ED85CD36-A5A8-4ED3-8E7F-A2B0022F9C09}"
       DTS:ObjectName="Project1 ADO">
+      <DTS:PropertyExpression
+        DTS:Name="InitialCatalog">@[$Project::Databasename]</DTS:PropertyExpression>
+      <DTS:PropertyExpression
+        DTS:Name="ServerName">@[$Project::ServerName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:ConnectionString="Data Source=localhost;Initial Catalog=Project1;Integrated Security=True;Application Name=&quot;SSIS-Project1-{ED85CD36-A5A8-4ED3-8E7F-A2B0022F9C09}Project1 ADO&quot;;" />
-      </DTS:ObjectData>
-    </DTS:ConnectionManager>
-    <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[RawBillData]"
-      DTS:CreationName="FLATFILE"
-      DTS:DTSID="{C99FF872-A7B9-46C3-9919-CB65BD915539}"
-      DTS:ObjectName="RawBillData">
-      <DTS:PropertyExpression
-        DTS:Name="ConnectionString">@[User::RawFolder]+"\\"+ @[User::FileName]</DTS:PropertyExpression>
-      <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:Format="Delimited"
-          DTS:LocaleID="1033"
-          DTS:HeaderRowDelimiter="_x000D__x000A_"
-          DTS:ColumnNamesInFirstDataRow="True"
-          DTS:RowDelimiter=""
-          DTS:TextQualifier="_x003C_none_x003E_"
-          DTS:CodePage="1252"
-          DTS:ConnectionString="E:\FPT\Project_02\FA_project1\resources\raw-folder\workfolder\CustomerData.csv">
-          <DTS:FlatFileColumns>
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="BillDetailID"
-              DTS:DTSID="{DB0D6315-B3CD-46AD-ABAA-67273F58155D}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="BillHeaderID"
-              DTS:DTSID="{452DFEF6-9569-47D5-8BFF-F308C27B6543}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="OrderDate"
-              DTS:DTSID="{DE371ED0-5728-4A98-B081-C43B8F6AC018}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="CustomerID"
-              DTS:DTSID="{5418C36F-68A6-4C54-B0E5-2298A024F5A3}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="ProductID"
-              DTS:DTSID="{6C2A3A32-6612-4B1F-8D4F-7381501D1A05}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="OrderQty"
-              DTS:DTSID="{698B49E9-EBC6-48FE-91FD-849352985FF4}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="uuid"
-              DTS:DTSID="{5E9CB4E7-7BFE-432C-8431-D69F2F64BCA4}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x000D__x000A_"
-              DTS:DataType="304"
-              DTS:TextQualified="True"
-              DTS:ObjectName="ModifiedDate"
-              DTS:DTSID="{619AA9E3-249C-47E0-8160-FF4482F971BC}"
-              DTS:CreationName="" />
-          </DTS:FlatFileColumns>
-        </DTS:ConnectionManager>
-      </DTS:ObjectData>
-    </DTS:ConnectionManager>
-    <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[RawCustomerDate]"
-      DTS:CreationName="FLATFILE"
-      DTS:DTSID="{247BAC48-F630-4557-9BEC-17D178A52D88}"
-      DTS:ObjectName="RawCustomerDate">
-      <DTS:PropertyExpression
-        DTS:Name="ConnectionString">@[User::RawFolder]+"\\"+ @[User::FileName]</DTS:PropertyExpression>
-      <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:Format="Delimited"
-          DTS:LocaleID="1033"
-          DTS:HeaderRowDelimiter="_x000D__x000A_"
-          DTS:ColumnNamesInFirstDataRow="True"
-          DTS:RowDelimiter=""
-          DTS:TextQualifier="_x003C_none_x003E_"
-          DTS:CodePage="1252"
-          DTS:ConnectionString="E:\FPT\Project_02\FA_project1\resources\raw-folder\workfolder\CustomerData.csv">
-          <DTS:FlatFileColumns>
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="CustomerID"
-              DTS:DTSID="{14F6AD98-95AF-44F8-A667-AFFC9D4CB55C}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="Account"
-              DTS:DTSID="{F32C5B2A-90FE-4D4E-9C5B-A72FF8906B6B}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="FirstName"
-              DTS:DTSID="{42B8D321-A5D9-4703-A373-A31AEB426861}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="LastName"
-              DTS:DTSID="{B9E4C8BD-AF61-4672-B85E-59E7FAAC944B}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="Address"
-              DTS:DTSID="{8D1F7C04-582D-473C-B542-6BF5CE6D94D3}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="City"
-              DTS:DTSID="{8935B590-9476-4886-B6E5-4CD06AC4C952}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="State"
-              DTS:DTSID="{6BA0957E-D9B1-4EEE-B7C1-42FDEEE21A35}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="Territory"
-              DTS:DTSID="{5A4DB001-555F-4BB4-AD88-DA769A02EBAD}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="DayOfBirth"
-              DTS:DTSID="{30721E70-ADBF-4A5A-BD38-FAC92F134A0E}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="Gender"
-              DTS:DTSID="{8CA4D7A0-4FE2-44C9-BE2A-50D827CD70B8}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x000D__x000A_"
-              DTS:DataType="304"
-              DTS:TextQualified="True"
-              DTS:ObjectName="ModifiedDate"
-              DTS:DTSID="{80337741-3861-4932-ABC8-8287B7DEC4A3}"
-              DTS:CreationName="" />
-          </DTS:FlatFileColumns>
-        </DTS:ConnectionManager>
-      </DTS:ObjectData>
-    </DTS:ConnectionManager>
-    <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[RawProductData]"
-      DTS:CreationName="FLATFILE"
-      DTS:DTSID="{9ABBAA30-7FA9-416D-B2A3-00FE892CACCE}"
-      DTS:ObjectName="RawProductData">
-      <DTS:PropertyExpression
-        DTS:Name="ConnectionString">@[User::RawFolder]+"\\"+ @[User::FileName]</DTS:PropertyExpression>
-      <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:Format="Delimited"
-          DTS:LocaleID="1033"
-          DTS:HeaderRowDelimiter="_x000D__x000A_"
-          DTS:ColumnNamesInFirstDataRow="True"
-          DTS:RowDelimiter=""
-          DTS:TextQualifier="_x003C_none_x003E_"
-          DTS:CodePage="1252"
-          DTS:ConnectionString="E:\FPT\Project_02\FA_project1\resources\raw-folder\workfolder\CustomerData.csv">
-          <DTS:FlatFileColumns>
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="ProductID"
-              DTS:DTSID="{0E2C674F-8F7F-45A6-8C3E-9AF2080B320C}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="ProductNumber"
-              DTS:DTSID="{0D708FE4-5F89-4C4D-B813-810850719C13}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="ProductName"
-              DTS:DTSID="{B58D116E-E733-4288-B216-34F3E4A7F30D}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="StandardCost"
-              DTS:DTSID="{10A67BBC-9BDD-4092-8629-AB2E9DE80CEF}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="ListPrice"
-              DTS:DTSID="{0204338C-49CE-4FD7-A9A2-CAB6FA22B428}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:MaximumWidth="50"
-              DTS:DataType="129"
-              DTS:TextQualified="True"
-              DTS:ObjectName="ProductCategory"
-              DTS:DTSID="{B8BBE2F7-95CF-4F3F-9CBA-B970A208F36A}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x000D__x000A_"
-              DTS:DataType="304"
-              DTS:TextQualified="True"
-              DTS:ObjectName="ModifiedDate"
-              DTS:DTSID="{E790B931-9331-4AE6-805D-2E835A1604F0}"
-              DTS:CreationName="" />
-          </DTS:FlatFileColumns>
-        </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -1010,6 +719,8 @@
       DTS:CreationName="FLATFILE"
       DTS:DTSID="{DECA624B-B9BC-490C-84E5-8ABB67F73C3D}"
       DTS:ObjectName="Write Bill CSV Temp">
+      <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[$Project::WriteBillCSVTemp]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:Format="Delimited"
@@ -1086,6 +797,8 @@
       DTS:CreationName="FLATFILE"
       DTS:DTSID="{74983C97-F5D8-42E7-8BC4-C974D47C379B}"
       DTS:ObjectName="Write Customer CSV Temp">
+      <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[$Project::WriteCustomerCSVTemp]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:Format="Delimited"
@@ -1194,6 +907,8 @@
       DTS:CreationName="FLATFILE"
       DTS:DTSID="{1F5924AA-FE33-458A-A43A-35A48AF5EED3}"
       DTS:ObjectName="Write Product Temp">
+      <DTS:PropertyExpression
+        DTS:Name="ConnectionString">@[$Project::WriteProductTemp]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:Format="Delimited"
@@ -1276,7 +991,7 @@
           DTS:RowDelimiter=""
           DTS:TextQualifier="_x003C_none_x003E_"
           DTS:CodePage="1252"
-          DTS:ConnectionString="E:\FPT\Project_02\FA_project1\resources\tmp\ETLCutoffTime210906162852.csv">
+          DTS:ConnectionString="E:\FPT\Project_02\FA_project1\resources\tmp\ETLCutoffTime210909010312.csv">
           <DTS:FlatFileColumns>
             <DTS:FlatFileColumn
               DTS:ColumnType="Delimited"
@@ -1293,84 +1008,6 @@
               DTS:TextQualified="True"
               DTS:ObjectName="CET"
               DTS:DTSID="{1B4A6C44-E515-4206-A53C-C01189405FA4}"
-              DTS:CreationName="" />
-          </DTS:FlatFileColumns>
-        </DTS:ConnectionManager>
-      </DTS:ObjectData>
-    </DTS:ConnectionManager>
-    <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[WriteStageBillDetail]"
-      DTS:CreationName="FLATFILE"
-      DTS:DTSID="{B4CBD884-E96A-4FA2-BBA7-34F9C9AEA7BC}"
-      DTS:ObjectName="WriteStageBillDetail">
-      <DTS:PropertyExpression
-        DTS:Name="ConnectionString">@[User::TempFolder]+"\\StageBillDetail"+RIGHT((DT_STR,4,1252)DATEPART( "yyyy" , getdate() ),2) + RIGHT("0" + (DT_STR,4,1252)DATEPART( "mm" , getdate() ), 2) + RIGHT("0" + (DT_STR,4,1252)DATEPART( "dd" , getdate() ), 2) +RIGHT("0" + (DT_STR,4,1252)DATEPART( "hh" , getdate() ), 2)+RIGHT("0" + (DT_STR,4,1252)DATEPART( "mi" , getdate() ), 2)+RIGHT("0" + (DT_STR,4,1252)DATEPART( "ss" , getdate() ), 2)+".csv"</DTS:PropertyExpression>
-      <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:Format="Delimited"
-          DTS:LocaleID="1033"
-          DTS:HeaderRowDelimiter="_x000D__x000A_"
-          DTS:ColumnNamesInFirstDataRow="True"
-          DTS:RowDelimiter=""
-          DTS:TextQualifier="_x003C_none_x003E_"
-          DTS:CodePage="1252"
-          DTS:ConnectionString="E:\FPT\Project_02\FA_project1\resources\tmp\StageBillDetail210906162852.csv">
-          <DTS:FlatFileColumns>
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:DataType="3"
-              DTS:TextQualified="True"
-              DTS:ObjectName="BillDetailID"
-              DTS:DTSID="{B4F4EF75-6F47-43AA-A59B-4C60CA171D8A}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:DataType="135"
-              DTS:TextQualified="True"
-              DTS:ObjectName="OrderDate"
-              DTS:DTSID="{7488B1B5-806A-4626-9E22-4BCE90D0D0A7}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:DataType="3"
-              DTS:TextQualified="True"
-              DTS:ObjectName="CustomerID"
-              DTS:DTSID="{A43D5EFD-ECF7-4317-A38A-70B3856ECEE9}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:DataType="3"
-              DTS:TextQualified="True"
-              DTS:ObjectName="ProductID"
-              DTS:DTSID="{C06A191A-87B7-48CC-AFA9-975B1BCCA287}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:DataType="3"
-              DTS:TextQualified="True"
-              DTS:ObjectName="OrderQty"
-              DTS:DTSID="{85F0184B-41E8-47D8-B017-D2694EDBD8FE}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x002C_"
-              DTS:DataType="6"
-              DTS:TextQualified="True"
-              DTS:ObjectName="UnitPrice"
-              DTS:DTSID="{F5F5748B-3B2D-46EA-B1EF-0C1031C9BF59}"
-              DTS:CreationName="" />
-            <DTS:FlatFileColumn
-              DTS:ColumnType="Delimited"
-              DTS:ColumnDelimiter="_x000D__x000A_"
-              DTS:DataType="6"
-              DTS:TextQualified="True"
-              DTS:ObjectName="LineProfit"
-              DTS:DTSID="{EAE81A9D-1DA0-4E68-B51C-7D7B9F2E3FBB}"
               DTS:CreationName="" />
           </DTS:FlatFileColumns>
         </DTS:ConnectionManager>
@@ -1930,7 +1567,7 @@
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
@@ -2144,7 +1781,7 @@
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT 
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">SELECT 
        [CustomerID]
       ,[Account]
       ,[FirstName]
@@ -2471,7 +2108,7 @@
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
@@ -3543,7 +3180,7 @@
                       dataType="System.String"
                       description="The SQL command to be executed."
                       name="SqlCommand"
-                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
                     <property
                       dataType="System.Int32"
                       description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -4024,7 +3661,7 @@
                       description="The SQL command to be executed."
                       expressionType="Notify"
                       name="SqlCommand"
-                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">Update STAGING.BillDetail set  OrderDate=?,CustomerID=?,ProductID=?, OrderQty=? where BillDetailID=?</property>
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">Update STAGING.BillDetail set  OrderDate=?,CustomerID=?,ProductID=?, OrderQty=? where BillDetailID=?</property>
                     <property
                       dataType="System.Int32"
                       description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -4677,7 +4314,7 @@
                       dataType="System.String"
                       description="The SQL command to be executed."
                       name="SqlCommand"
-                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
                     <property
                       dataType="System.String"
                       description="The variable that contains the SQL command to be executed."
@@ -5420,7 +5057,7 @@
                       dataType="System.String"
                       description="The SQL command to be executed."
                       name="SqlCommand"
-                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
                     <property
                       dataType="System.String"
                       description="The variable that contains the SQL command to be executed."
@@ -6353,7 +5990,7 @@
                       description="The SQL command to be executed."
                       expressionType="Notify"
                       name="SqlCommand"
-                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">Update STAGING.Customer set Account=?,FirstName=? ,LastName=?,Address=?,City =?,State=?,Territory=?,DateOfBirth=?,Gender=? where CustomerID=?</property>
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">Update STAGING.Customer set Account=?,FirstName=? ,LastName=?,Address=?,City =?,State=?,Territory=?,DateOfBirth=?,Gender=? where CustomerID=?</property>
                     <property
                       dataType="System.Int32"
                       description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -6642,7 +6279,7 @@
                       dataType="System.String"
                       description="The SQL command to be executed."
                       name="SqlCommand"
-                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
                     <property
                       dataType="System.Int32"
                       description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -7932,7 +7569,7 @@
                       dataType="System.String"
                       description="The SQL command to be executed."
                       name="SqlCommand"
-                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
                     <property
                       dataType="System.Int32"
                       description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -8675,7 +8312,7 @@
                       dataType="System.String"
                       description="The SQL command to be executed."
                       name="SqlCommand"
-                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
                     <property
                       dataType="System.String"
                       description="The variable that contains the SQL command to be executed."
@@ -9373,7 +9010,7 @@
                       description="The SQL command to be executed."
                       expressionType="Notify"
                       name="SqlCommand"
-                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">Update STAGING.Product set  ProductNumber=?,ProductName=?,StandardCost=?, ListPrice=?,ProductCategory=? where ProductID=?</property>
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">Update STAGING.Product set  ProductNumber=?,ProductName=?,StandardCost=?, ListPrice=?,ProductCategory=? where ProductID=?</property>
                     <property
                       dataType="System.Int32"
                       description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -9984,9 +9621,9 @@
       <GraphLayout
         Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
         <NodeLayout
-          Size="173,42"
+          Size="NaN,NaN"
           Id="Package.EventHandlers[OnError]\Send Mail On Error"
-          TopLeft="447,186" />
+          TopLeft="NaN,NaN" />
       </GraphLayout>
     </LayoutInfo>
   </DtsEventHandler>
@@ -10124,6 +9761,18 @@
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
+  <DtsEventHandler
+    design-time-name="Package\DFT Create Temp Files for Snowflake.EventHandlers[OnError]">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        <NodeLayout
+          Size="NaN,NaN"
+          Id="Package\DFT Create Temp Files for Snowflake.EventHandlers[OnError]\Send Mail On Error"
+          TopLeft="NaN,NaN" />
+      </GraphLayout>
+    </LayoutInfo>
+  </DtsEventHandler>
   <PipelineComponentMetadata
     design-time-name="Package\DFT Create Temp Files for Snowflake\SRC PRODUCT">
     <Properties>
@@ -10234,9 +9883,7 @@
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -10306,9 +9953,7 @@
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -10366,9 +10011,7 @@
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -10402,9 +10045,7 @@
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -10438,9 +10079,7 @@
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -10510,9 +10149,7 @@
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -11006,9 +10643,7 @@
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -11042,9 +10677,7 @@
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -11078,9 +10711,7 @@
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -11150,9 +10781,7 @@
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -11186,9 +10815,7 @@
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -11246,9 +10873,7 @@
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -11304,17 +10929,5 @@
       </Property>
     </Properties>
   </PipelineComponentMetadata>
-  <DtsEventHandler
-    design-time-name="Package\DFT Create Temp Files for Snowflake.EventHandlers[OnError]">
-    <LayoutInfo>
-      <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
-        <NodeLayout
-          Size="173,42"
-          Id="Package\DFT Create Temp Files for Snowflake.EventHandlers[OnError]\Send Mail On Error"
-          TopLeft="426,160" />
-      </GraphLayout>
-    </LayoutInfo>
-  </DtsEventHandler>
 </Objects>]]></DTS:DesignTimeProperties>
 </DTS:Executable>
