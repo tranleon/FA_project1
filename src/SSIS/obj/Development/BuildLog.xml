@@ -2,13 +2,13 @@
 <BuildLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ProjectInfo>
     <Name>Project1</Name>
-    <LastWriteTime>2021-09-06T09:30:41.6159464Z</LastWriteTime>
+    <LastWriteTime>2021-09-08T18:03:12.7685436Z</LastWriteTime>
     <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
   </ProjectInfo>
   <LastBuildInfos>
     <ProjectBuildItemInfo>
       <Name>Project1_uploadSnowflake.dtsx</Name>
-      <LastWriteTime>2021-09-06T09:28:52.7256924Z</LastWriteTime>
+      <LastWriteTime>2021-09-08T18:03:12.7265491Z</LastWriteTime>
       <LastKnownProtectionLevel>EncryptSensitiveWithUserKey</LastKnownProtectionLevel>
     </ProjectBuildItemInfo>
     <ProjectBuildItemInfo>
